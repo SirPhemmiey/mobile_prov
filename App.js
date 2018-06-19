@@ -127,7 +127,7 @@ const Application = StackNavigator(
     headerMode: 'none',
     // initialRouteName: 'loginStack'
     // initialRouteName: 'welcomeStack'
-    initialRouteName: 'loginStack'
+    initialRouteName: 'changePassword'
     //initialRouteName: 'editProfile'
     // initialRouteName: 'mapping'
      //initialRouteName: 'schedules'
@@ -136,7 +136,7 @@ const Application = StackNavigator(
 
 export default class App extends React.Component {
   render () {
-    console.disableYellowBox = true
+    //console.disableYellowBox = true
     return <Application />
   }
 }

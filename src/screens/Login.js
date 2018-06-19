@@ -90,7 +90,7 @@ export default class Login extends React.Component {
     }
   }
   componentWillMount() {
-    SplashScreen.show();
+    //SplashScreen.show();
     AsyncStorage.getItem('jwt').then(token => {
       if (token != null) {
           SplashScreen.hide();
@@ -99,7 +99,7 @@ export default class Login extends React.Component {
       else {
          SplashScreen.hide();
       }
-  }).done();
+  });
 //   AsyncStorage.getItem('seeWelcome').then(token => {
 //     if (token != 'yes') {
 //          SplashScreen.hide();
@@ -130,7 +130,7 @@ export default class Login extends React.Component {
             <Text style={styles.title}>Provider Login</Text>
           </View>
           <Form>
-            <Item floatingLabel>
+            <Item stackedLabel>
               <Label style={{ fontFamily: 'NunitoSans-Regular' }}>
                 Username
               </Label>
@@ -144,7 +144,7 @@ export default class Login extends React.Component {
                 autoCorrect={false}
               />
             </Item>
-            <Item floatingLabel last>
+            <Item stackedLabel last>
               <Label style={{ fontFamily: 'NunitoSans-Regular' }}>
                 Password
               </Label>

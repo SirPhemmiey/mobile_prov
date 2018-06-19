@@ -181,10 +181,6 @@ export default class Schedules extends React.Component {
         })
     })
   }
-
-click = () => {
-  alert()
-}
 _refresh() {
   this.loadData()
 }
@@ -243,11 +239,7 @@ _handleConfirm = (schedule_id, provider_id) => () => {
     const { navigate,goBack } = this.props.navigation
     return (
       <Container>
-          <StatusBar
-          barStyle='light-content'
-          backgroundColor='#6c5ce7'
-          networkActivityIndicatorVisible
-        />
+         
         <Header style={{ backgroundColor: '#6c5ce7' }}>
          <Left>
          <Button transparent>
@@ -263,6 +255,11 @@ _handleConfirm = (schedule_id, provider_id) => () => {
          </Body>
          <Right />
         </Header>
+         <StatusBar
+          barStyle='light-content'
+          backgroundColor='#6c5ce7'
+          networkActivityIndicatorVisible
+        />
         <PTRView 
         onRefresh={this._refresh}
         colors='#6c5ce7'

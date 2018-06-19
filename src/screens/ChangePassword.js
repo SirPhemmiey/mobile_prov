@@ -10,10 +10,14 @@ import {
   Item,
   Input,
   Button,
-  View
+  View,
+  Left,
+  Right,
+  Icon,
+  Body,
+  Title
 } from 'native-base'
 import Config from 'react-native-config'
-import { NavigationActions } from 'react-navigation'
 import { ProgressDialog, Dialog } from 'react-native-simple-dialogs'
 
 export default class ChangePassword extends React.Component {
@@ -33,26 +37,18 @@ export default class ChangePassword extends React.Component {
     }
   }
 
-  navigateToLogin = () => {
-    // this.props.navigation.dispatch(
-    //   NavigationActions.reset({
-    //     index: 0,
-    //     actions: [NavigationActions.navigate({ routeName: 'drawerStack' })]
-    //   })
-    // )
-    const toHome = NavigationActions.reset({
-      index: 0,
-      actions: [NavigationActions.navigate({ routeName: 'drawerStack' })]
-    })
-    this.props.navigation.dispatch(toHome)
-  }
-
   _handleChangePassword = () => {
-      const {oldPassword, newPassword, newPassword2} = this.state;
+    this.setState({ showLoading: true})
+      let {oldPassword, newPassword, newPassword2} = this.state;
     if (oldPassword != '' && newPassword != '' && newPassword2 != '') {
-      this.setState({ showLoading: true })
-      fetch('http://192.168.56.1/stylefit/provapi/changePassword', {
+      //this.setState({ showLoading: true })
+      AsyncStorage.getItem('jwt').then(token => {
+        fetch('http://192.168.56.1/stylefit/ProvApi/change_password', {
         method: 'POST',
+         headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
         body: JSON.stringify({
           oldPassword: this.state.password,
           newPassword: this.state.newPassword,
@@ -62,24 +58,24 @@ export default class ChangePassword extends React.Component {
         .then(res => res.json())
         .then(res => {
           this.setState({ showLoading: false })
-          if (res.ok) {
+          if (res == 'ok') {
             this.setState({
                 showDialog: true,
                 dialogMessage: "Password changed successfully. It will be active when next you want to login."
               })
-          } else if (res.err) {
+          } else if (res == 'err') {
             this.setState({
               showDialog: true,
               dialogMessage: "Oops! An error occured. Please retry"
             })
           }
-          else if (res.oldDiff) {
+          else if (res == 'oldDiff') {
             this.setState({
                 showDialog: true,
                 dialogMessage: "Old not"
               })
           }
-          else if (res.newPassDiff) {
+          else if (res == 'newPassDiff') {
             this.setState({
                 showDialog: true,
                 dialogMessage: "New password is diff"
@@ -88,12 +84,14 @@ export default class ChangePassword extends React.Component {
           console.warn(res)
         })
         .catch(err => {
-          this.setState({ showLoading: false })
           this.setState({
+            showLoading: false,
             showDialog: true,
             dialogMessage: err.message
           })
+          console.warn(err);
         })
+      })
     } else {
       this.setState({
         showDialog: true,
@@ -103,21 +101,32 @@ export default class ChangePassword extends React.Component {
   }
 
   render () {
-    const { navigate } = this.props.navigation
+    const { navigate, goBack } = this.props.navigation
     return (
       <Container>
+        <Header style={{ backgroundColor: '#6c5ce7' }}>
+         <Left>
+         <Button transparent>
+              <Icon
+                onPress={() => goBack()}
+                ios='ios-arrow-back'
+                android='md-arrow-back'
+              />
+            </Button>
+         </Left>
+         <Body style={{flex:2}}>
+             <Title style={{fontFamily: 'NunitoSans-Regular'}}>Change Password</Title>
+         </Body>
+         <Right />
+        </Header>
+         <StatusBar
+          barStyle='light-content'
+          backgroundColor='#6c5ce7'
+          networkActivityIndicatorVisible
+        />
         <Content style={{ padding: 10, flex: 1 }}>
-          <StatusBar
-            barStyle='light-content'
-            backgroundColor='#6c5ce7'
-            networkActivityIndicatorVisible
-          />
-          <View style={styles.logoContainer}>
-            
-            <Text style={styles.title}>Change Password</Text>
-          </View>
           <Form>
-            <Item floatingLabel>
+            <Item stackedLabel>
               <Label style={{ fontFamily: 'NunitoSans-Regular' }}>
                 Old Password
               </Label>
@@ -129,20 +138,20 @@ export default class ChangePassword extends React.Component {
                 secureTextEntry
               />
             </Item>
-            <Item floatingLabel>
+            <Item stackedLabel>
               <Label style={{ fontFamily: 'NunitoSans-Regular' }}>
                 New Password
               </Label>
               <Input
                 style={styles.input}
-                returnKeyType='go'
+                returnKeyType='next'
                 ref={input => (this.passwordInput = input)}
                 onSubmitEditing={() => this.password2Input.focus()}
                 secureTextEntry
                 onChangeText={newPassword => this.setState({ newPassword })}
               />
             </Item>
-            <Item floatingLabel last>
+            <Item stackedLabel last>
               <Label style={{ fontFamily: 'NunitoSans-Regular' }}>
                 Confirm Password
               </Label>
@@ -154,6 +163,9 @@ export default class ChangePassword extends React.Component {
                 onChangeText={newPassword2 => this.setState({ newPassword2 })}
               />
             </Item>
+            <Text>old password id is {this.state.oldPassword}</Text>
+              <Text>new password is {this.state.newPassword}</Text>
+              <Text>Confirm password is {this.state.newPassword2}</Text>
             <Button
               bordered
               small

@@ -107,7 +107,7 @@ export default class EditProfile extends React.Component {
           this.setState({
             disableButton: true,
             showDialog: true,
-            dialogMessage: err.message + "Go back to the previous page",
+            dialogMessage: err.message + ". Go back to the previous page",
             showLoader: false
           })
         })
@@ -214,7 +214,7 @@ export default class EditProfile extends React.Component {
       <Container>
        <Header style={{ backgroundColor: '#6c5ce7' }}>
           <Left>
-            <Button transparent iconLeft onPress={() => goBack()}>
+            <Button transparent iconLeft onPress={() => navigation.goBack()}>
               <Icon ios='ios-arrow-back'
                 android='md-arrow-back' />
             </Button>
@@ -312,7 +312,7 @@ export default class EditProfile extends React.Component {
                  <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
                  <Label style={{marginLeft: 20, color: '#0000'}}>Bio</Label>
                  <View style={{marginBottom: 30}}></View>
-               <Textarea onChangeText={(intro) => this.setState({intro})} ref={input => (this.bioInput = input)} rowSpan={5} style={{fontFamily:'NunitoSans-Regular', left:0, right:0,  marginRight:20, flex:1}} bordered placeholder="Write a short intro about yourself here..." />
+               <Textarea onChangeText={(intro) => this.setState({intro})} ref={input => (this.bioInput = input)} rowSpan={5} style={{fontFamily:'NunitoSans-Regular', left:0, right:0,  marginRight:20, flex:1}} bordered placeholder="Write a short introduction about yourself and what you do..." />
               </View>
                   </View>
                 
