@@ -127,8 +127,8 @@ const Application = StackNavigator(
     headerMode: 'none',
     // initialRouteName: 'loginStack'
     // initialRouteName: 'welcomeStack'
-    //initialRouteName: 'loginStack'
-    initialRouteName: 'editProfile'
+    initialRouteName: 'loginStack'
+    //initialRouteName: 'editProfile'
     // initialRouteName: 'mapping'
      //initialRouteName: 'schedules'
   }

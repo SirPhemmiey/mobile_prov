@@ -48,9 +48,12 @@ export default class Home extends React.Component {
       dialogVisibleAccept: false,
       dialogVisibleReject: false,
     };
+    this.loadData = this.loadData.bind();
+    this._refresh = this._refresh.bind();
+    this._handleComplete = this._handleComplete.bind();
   }
 
-  loadData = () => {
+  loadData(){
     AsyncStorage.getItem('jwt').then(token => {
       fetch(Config.API_URL+'/ProvApi/home', {
         method: 'GET',
@@ -110,7 +113,7 @@ export default class Home extends React.Component {
   //     this.props.navigation.replace('loginStack');
   //   });
   // };
-  _refresh = () => {
+  _refresh() {
     this.loadData();
   };
   _sendRequest = (type, schedule_id, tracking_id) => {
@@ -163,6 +166,47 @@ export default class Home extends React.Component {
           });
         });
     });
+  }
+  _handleComplete(schedule_id) {
+    AsyncStorage.getItem('jwt').then(token => {
+    this.setState({ showLoading: true})
+    fetch(Config.API_URL + '/ProvApi/confirm_schedule', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          schedule_id: schedule_id
+        })
+      })
+      .then(res => res.json())
+      .then(res => {
+        if (res == 'done') {
+          this.setState({
+            showDialog: true,
+            showLoading: false,
+            dialogMessage: "Provider has been confirmed successfully",
+          })
+          this.loadData()
+          //trigger the modal
+          this.setModalVisible(true, schedule_id, provider_id);
+        } else {
+          this.setState({
+            showLoading: false,
+            showDialog: true,
+            dialogMessage: "An error occured during confirmation",
+          })
+        }
+      })
+      .catch(err => {
+        this.setState({
+          showDialog: true,
+          showLoading: false,
+          dialogMessage: err.message,
+        })
+      })
+  })
   }
   // _accept = () => {
   //   this._sendRequest('accept');
@@ -290,6 +334,20 @@ export default class Home extends React.Component {
                         >
                           <Text style={styles.button}>Accept</Text>
                         </Button>
+                        {
+        customer['Schedule']['provider_confirm'] == 'yes' ? 
+        <Button small disabled success style={styles.button}>
+         <Text style={styles.buttonText}>Schedule Accepted</Text>
+       </Button> :
+       null
+      }
+                 {
+        customer['Schedule']['prov_mark_completed'] == 'no' || customer['Schedule']['prov_mark_completed'] == '' ? 
+        <Button danger onPress={this._handleComplete(customer['Schedule']['id'])} small style={styles.button}>
+          <Text style={styles.buttonText}>Mark as Complete</Text>
+        </Button> :
+        null
+      }
                       </View>
                      
                     </Card>

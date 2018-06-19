@@ -158,13 +158,20 @@ export default class EditProfile extends React.Component {
             longitude: this.state.longitude,
             latitude: this.state.latitude,
             profession: this.state.profession,
-            service_id: this.state.selectedService
+            service_id: this.state.selectedService,
             intro: this.state.intro
           }
         })
           .then(res => res.json())
           .then(res => {
-            if (res == 'auth') {
+            if (res == 'done') {
+              this.setState({
+                showLoading: false,
+                showDialog: true,
+                dialogMessage: 'Your profile was successfully updated'
+              })
+            }
+            else if (res == 'auth') {
               this.setState({
                 showLoading: false,
                 showDialog: true,
@@ -176,13 +183,6 @@ export default class EditProfile extends React.Component {
                 showLoading: false,
                 showDialog: true,
                 dialogMessage: 'Oops! An error occured while updating your profile. Please try again'
-              })
-            }
-            else {
-              this.setState({
-                showLoading: false,
-                showDialog: true,
-                dialogMessage: 'Your profile was successfully updated'
               })
             }
           })
