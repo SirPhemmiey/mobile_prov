@@ -122,11 +122,10 @@ export default class EditProfile extends React.Component {
     RNGooglePlaces.openPlacePickerModal()
       .then(place => {
         this.setState({
-          address: "Lol",
+          address: place.name + ', ' + place.address,
           latitude: place.latitude,
           longitude: place.longitude
         })
-        console.warn(place);
       })
       .catch(error => {
         this.setState({
@@ -136,65 +135,68 @@ export default class EditProfile extends React.Component {
       })
   }
   _saveData() {
-    this.setState({
-      showDialog: true,
-      dialogMessage: 'This feature hasn\'t been activated. Please check back'
-    })
-    //this.setState({ showLoading: true })
-    //const { address, profession, intro } = this.state; 
-    //if (address != '' && profession != '' && intro != '') {
+    // this.setState({
+    //   showDialog: true,
+    //   dialogMessage: 'This feature hasn\'t been activated. Please check back'
+    // })
+    this.setState({ showLoading: true })
+    let { address, profession, intro } = this.state; 
+    if (address != '' && profession != '' && intro != '') {
       // alert(this.state.address + "address");
       // alert(this.state.profession + "prof");
       // alert(this.state.selectedService + "service");
       // alert(this.state.intro + "intro");
-      // AsyncStorage.getItem('jwt').then(token => {
-      //   fetch('http://192.168.56.1/stylefit/provapi/update_profile', {
-      //     method: 'POST',
-      //     headers: {
-      //       'Content-Type': 'application/json',
-      //       Authorization: `Bearer ${token}`
-      //     }
-      //   })
-      //     .then(res => res.json())
-      //     .then(res => {
-      //       if (res == 'auth') {
-      //         this.setState({
-      //           showLoading: false,
-      //           showDialog: true,
-      //           dialogMessage: 'You are not authorized'
-      //         })
-      //       }
-      //       else if (res == 'error') {
-      //         this.setState({
-      //           showLoading: false,
-      //           showDialog: true,
-      //           dialogMessage: 'Oops! An error occured while updating your profile. Please try again'
-      //         })
-      //       }
-      //       else {
-      //         this.setState({
-      //           showLoading: false,
-      //           showDialog: true,
-      //           dialogMessage: 'Your profile was successfully updated'
-      //         })
-      //       }
-      //     })
-      //     .catch(err => {
-      //       this.setState({
-      //         showDialog: true,
-      //         dialogMessage: err.message + ". Please retry",
-      //         showLoading: false
-      //       })
-      //     })
-      // })
-    //}
-    // else {
-    //   this.setState({
-    //     showDialog: true,
-    //     dialogMessage: "Fields cannot be empty",
-    //     showLoading: false
-    //   })
-    // }
+      AsyncStorage.getItem('jwt').then(token => {
+        fetch(Config.API_URL+'/ProvApi/update_profile', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          },
+          body: {
+            
+          }
+        })
+          .then(res => res.json())
+          .then(res => {
+            if (res == 'auth') {
+              this.setState({
+                showLoading: false,
+                showDialog: true,
+                dialogMessage: 'You are not authorized'
+              })
+            }
+            else if (res == 'error') {
+              this.setState({
+                showLoading: false,
+                showDialog: true,
+                dialogMessage: 'Oops! An error occured while updating your profile. Please try again'
+              })
+            }
+            else {
+              this.setState({
+                showLoading: false,
+                showDialog: true,
+                dialogMessage: 'Your profile was successfully updated'
+              })
+            }
+          })
+          .catch(err => {
+            this.setState({
+              showDialog: true,
+              dialogMessage: err.message + ". Please retry",
+              showLoading: false
+            })
+          })
+      })
+    }
+    else {
+      this.setState({
+        showDialog: true,
+        dialogMessage: "Fields cannot be empty",
+        showLoading: false
+      })
+    }
   }
   componentDidMount () {
     this.loadData();
@@ -231,7 +233,7 @@ export default class EditProfile extends React.Component {
 
               <View style={{
                            flexDirection: 'row',
-                           justifyContent: 'space-around'
+                           justifyContent: 'space-between'
                          }}>
               <Text style={styles.label}>Service</Text>
               <Picker
@@ -315,6 +317,10 @@ export default class EditProfile extends React.Component {
 
               </View>
               </Form>
+              <Text>Service id is {this.state.selectedService}</Text>
+              <Text>Profession id is {this.state.profession}</Text>
+              <Text>address id is {this.state.address}</Text>
+              <Text>Intro is {this.state.intro}</Text>
               <Button disabled={this.state.disableButton} onPress={this._saveData} small style={styles.hire}>
                 <Text
                   style={{
