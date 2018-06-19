@@ -154,7 +154,12 @@ export default class EditProfile extends React.Component {
             Authorization: `Bearer ${token}`
           },
           body: {
-            
+            address: this.state.address,
+            longitude: this.state.longitude,
+            latitude: this.state.latitude,
+            profession: this.state.profession,
+            service_id: this.state.selectedService
+            intro: this.state.intro
           }
         })
           .then(res => res.json())
