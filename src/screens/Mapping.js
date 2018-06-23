@@ -106,7 +106,7 @@ export default class Mapping extends React.Component {
         .catch(err => {
           this.setState({
             showDialog: true,
-            dialogMessage: err.message + "lol here",
+            dialogMessage: err.message,
             showLoader: false
           })
         })

@@ -18,10 +18,8 @@ import EditProfile from './src/screens/EditProfile'
 
 const tabStack = TabNavigator(
   {
-    // Home: {
-    //   screen: Home
-    // },
-    Track: { screen: Mapping },
+     Home: {screen: Home},
+    //Track: { screen: Mapping },
     //Schedules: { screen: Schedules},
     //Settings: { screen: Settings },
   },

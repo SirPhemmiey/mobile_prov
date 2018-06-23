@@ -48,102 +48,68 @@ export default class Home extends React.Component {
       dialogVisibleAccept: false,
       dialogVisibleReject: false,
     };
-    this.loadData = this.loadData.bind();
+    //this.loadData = this.loadData.bind();
     this._refresh = this._refresh.bind();
     //this._handleComplete = this._handleComplete.bind();
   }
 
-  // loadData(){
-  //   AsyncStorage.getItem('jwt').then(token => {
-  //     fetch('http://192.168.56.1/stylefit/ProvApi/home', {
-  //       method: 'GET',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     })
-  //       .then(res => res.json())
-  //       .then(res => {
-  //         if (res == 'empty') {
-  //           this.setState({
-  //             //showDialog: true,
-  //             //dialogMessage: "You have no schedule yet.",
-  //             showLoading: false,
-  //           });
-  //            ToastAndroid.showWithGravity(
-  //           'You have no schedule yet.',
-  //           ToastAndroid.SHORT,
-  //           ToastAndroid.CENTER
-  //         )
-  //         }
-  //         else if (res == 'auth') {
-  //           this.setState({
-  //             showDialog: true,
-  //             dialogMessage: "You are unauthorized",
-  //             showLoading: false,
-  //           });
-  //         }
-  //         else if (res == 'user') {
-  //           this.setState({
-  //             showDialog: true,
-  //             dialogMessage: "User not found",
-  //             showLoading: false,
-  //           });
-  //         }
-  //        else {
-  //         this.setState({
-  //           showLoading: false,
-  //           customers: res,
-  //         });
-  //        }
-  //       })
-  //       .catch(err => {
-  //         this.setState({
-  //           showDialog: true,
-  //           dialogMessage: err.message,
-  //           showLoading: false,
-  //         })
-  //       });
-  //   });
-  // };
-  loadData() {
+  loadData = () => {
     AsyncStorage.getItem('jwt').then(token => {
       fetch(Config.API_URL+'/ProvApi/home', {
         method: 'GET',
-       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-       }
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        }
       })
-      .then(res => res.json())
-      .then(res => {
-        this.setState({
-                    showLoading: false,
-                    customers: res,
-                  });
-      })
-      .catch(err => {
+        .then(res => res.json())
+        .then(res => {
           // this.setState({
-          //   showDialog: true,
-          //   dialogMessage: err.message,
           //   showLoader: false
           // })
-          // ToastAndroid.showWithGravity(
-          //   err.message,
-          //   ToastAndroid.SHORT,
-          //   ToastAndroid.CENTER
-          // )
-          alert("error")
+                  if (res == 'empty') {
+            this.setState({
+              //showDialog: true,
+              //dialogMessage: "You have no schedule yet.",
+              showLoading: false,
+            });
+             ToastAndroid.showWithGravity(
+            'You have no schedule yet.',
+            ToastAndroid.SHORT,
+            ToastAndroid.CENTER
+          )
+          }
+           else if (res == 'auth') {
+            this.setState({
+              showDialog: true,
+              dialogMessage: "You are unauthorized",
+              showLoading: false,
+            });
+          }
+                   else if (res == 'user') {
+            this.setState({
+              showDialog: true,
+              dialogMessage: "User not found",
+              showLoading: false,
+            });
+          }
+                 else {
+          this.setState({
+            showLoading: false,
+            customers: res,
+          });
+         }
+        })
+        .catch(err => {
+          this.setState({
+            showDialog: true,
+            dialogMessage: err.message + "lol here",
+            showLoader: false
+          })
         })
     })
   }
-  // login = () => {
-  //   let keys = ['jwt', 'loggedIn', 'seeWelcome', 'phone'];
-  //   AsyncStorage.multiRemove(keys, err => {
-  //     alert('Deleted');
-  //     this.props.navigation.replace('loginStack');
-  //   });
-  // };
   _refresh() {
     this.loadData();
   };
