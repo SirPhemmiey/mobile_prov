@@ -135,17 +135,9 @@ export default class EditProfile extends React.Component {
       })
   }
   _saveData() {
-    // this.setState({
-    //   showDialog: true,
-    //   dialogMessage: 'This feature hasn\'t been activated. Please check back'
-    // })
     this.setState({ showLoading: true })
     let { address, profession, intro } = this.state; 
     if (address != '' && profession != '' && intro != '') {
-      // alert(this.state.address + "address");
-      // alert(this.state.profession + "prof");
-      // alert(this.state.selectedService + "service");
-      // alert(this.state.intro + "intro");
       AsyncStorage.getItem('jwt').then(token => {
         fetch(Config.API_URL+'/ProvApi/update_profile', {
           method: 'POST',
@@ -153,14 +145,14 @@ export default class EditProfile extends React.Component {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`
           },
-          body: {
+          body: JSON.stringify({
             address: this.state.address,
             longitude: this.state.longitude,
             latitude: this.state.latitude,
             profession: this.state.profession,
             service_id: this.state.selectedService,
             intro: this.state.intro
-          }
+          })
         })
           .then(res => res.json())
           .then(res => {
@@ -322,10 +314,6 @@ export default class EditProfile extends React.Component {
 
               </View>
               </Form>
-              <Text>Service id is {this.state.selectedService}</Text>
-              <Text>Profession id is {this.state.profession}</Text>
-              <Text>address id is {this.state.address}</Text>
-              <Text>Intro is {this.state.intro}</Text>
               <Button disabled={this.state.disableButton} onPress={this._saveData} small style={styles.hire}>
                 <Text
                   style={{

@@ -18,12 +18,12 @@ import EditProfile from './src/screens/EditProfile'
 
 const tabStack = TabNavigator(
   {
-    Home: {
-      screen: Home
-    },
-    //Track: { screen: Mapping },
-    Schedules: { screen: Schedules},
-    Settings: { screen: Settings },
+    // Home: {
+    //   screen: Home
+    // },
+    Track: { screen: Mapping },
+    //Schedules: { screen: Schedules},
+    //Settings: { screen: Settings },
   },
   {
     navigationOptions: ({ navigation }) => {
@@ -80,7 +80,7 @@ const tabStack = TabNavigator(
       },
     },
     headerMode: 'none',
-    initialRouteName: 'Home'
+    //initialRouteName: 'Home'
   }
 )
 
@@ -127,7 +127,7 @@ const Application = StackNavigator(
     headerMode: 'none',
     // initialRouteName: 'loginStack'
     // initialRouteName: 'welcomeStack'
-    initialRouteName: 'changePassword'
+    initialRouteName: 'loginStack'
     //initialRouteName: 'editProfile'
     // initialRouteName: 'mapping'
      //initialRouteName: 'schedules'

@@ -90,26 +90,26 @@ export default class Login extends React.Component {
     }
   }
   componentWillMount() {
-    //SplashScreen.show();
-    AsyncStorage.getItem('jwt').then(token => {
-      if (token != null) {
-          SplashScreen.hide();
-          this.props.navigation.replace('tabStack')
-      }
-      else {
-         SplashScreen.hide();
-      }
-  });
-//   AsyncStorage.getItem('seeWelcome').then(token => {
-//     if (token != 'yes') {
-//          SplashScreen.hide();
-//         this.props.navigation.replace('welcomeStack')
-//     }
-//     else {
-//        SplashScreen.hide();
-//     }
-// }).done();
-  }
+    SplashScreen.hide();
+   AsyncStorage.getItem('jwt').then(token => {
+     if (token != null) {
+         //SplashScreen.hide();
+         this.props.navigation.replace('tabStack')
+     }
+     else {
+        SplashScreen.hide();
+     }
+ }).done();
+ AsyncStorage.getItem('seeWelcome').then(token => {
+   if (token != 'yes') {
+       SplashScreen.hide();
+       this.props.navigation.replace('welcomeStack')
+   }
+   else {
+      SplashScreen.hide();
+   }
+}).done();
+ }
 
   render () {
     const { navigate } = this.props.navigation

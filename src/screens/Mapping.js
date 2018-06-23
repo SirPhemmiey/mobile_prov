@@ -4,7 +4,7 @@ import MapView, { Marker } from 'react-native-maps'
 import MapViewDirections from 'react-native-maps-directions'
 import Config from 'react-native-config';
 import { Dialog } from 'react-native-simple-dialogs';
-import { Container, Content, Footer,Button } from 'native-base';
+import { Container, Content, Footer,Button,Header,Left,Right,Title,Body,Icon } from 'native-base';
 const { width, height } = Dimensions.get('window')
 
 const LATITUDE_DELTA = 0.01
@@ -51,7 +51,7 @@ export default class Mapping extends React.Component {
               dialogMessage: 'Provider hasn\'t confirmed the schedule. Please check back'
             })
             setTimeout(() => {
-              this.props.navigation.navigate("drawerStack")
+              this.props.navigation.navigate("tabStack")
             }, 3000)
           }
           // else if (res == 'both_confirmed') {
@@ -76,7 +76,7 @@ export default class Mapping extends React.Component {
   }
   _getProvLocation = () => {
     AsyncStorage.getItem('jwt').then(token => {
-      fetch(Config.API_URL+'/provapi/get_latlng', {
+      fetch(Config.API_URL+'/ProvApi/get_latlng', {
         method: 'GET',
         headers: {
           Accept: 'application/json',
@@ -90,7 +90,6 @@ export default class Mapping extends React.Component {
             showLoader: false
           })
           if (res != 'empty') {
-            //console.warn(res.customer_lat)
             this.setState({
               latitude: res.customer_lat,
               longitude: res.customer_long,
@@ -107,7 +106,7 @@ export default class Mapping extends React.Component {
         .catch(err => {
           this.setState({
             showDialog: true,
-            dialogMessage: err.message,
+            dialogMessage: err.message + "lol here",
             showLoader: false
           })
         })
