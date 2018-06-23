@@ -55,51 +55,48 @@ export default class Home extends React.Component {
 
   loadData = () => {
     AsyncStorage.getItem('jwt').then(token => {
-      fetch(Config.API_URL+'/ProvApi/home', {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        }
-      })
+      fetch(Config.API_URL + '/ProvApi/home', {
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          }
+        })
         .then(res => res.json())
         .then(res => {
           // this.setState({
           //   showLoader: false
           // })
-                  if (res == 'empty') {
+          if (res == 'empty') {
             this.setState({
               //showDialog: true,
               //dialogMessage: "You have no schedule yet.",
               showLoading: false,
             });
-             ToastAndroid.showWithGravity(
-            'You have no schedule yet.',
-            ToastAndroid.SHORT,
-            ToastAndroid.CENTER
-          )
-          }
-           else if (res == 'auth') {
+            ToastAndroid.showWithGravity(
+              'You have no schedule yet.',
+              ToastAndroid.SHORT,
+              ToastAndroid.CENTER
+            )
+          } else if (res == 'auth') {
             this.setState({
               showDialog: true,
               dialogMessage: "You are unauthorized",
               showLoading: false,
             });
-          }
-                   else if (res == 'user') {
+          } else if (res == 'user') {
             this.setState({
               showDialog: true,
               dialogMessage: "User not found",
               showLoading: false,
             });
+          } else {
+            this.setState({
+              showLoading: false,
+              customers: res,
+            });
           }
-                 else {
-          this.setState({
-            showLoading: false,
-            customers: res,
-          });
-         }
         })
         .catch(err => {
           this.setState({
@@ -118,18 +115,18 @@ export default class Home extends React.Component {
     //   showLoading: true,
     // });
     AsyncStorage.getItem('jwt').then(token => {
-      fetch(Config.API_URL+'/ProvApi/confirm_request', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          type: type,
-          schedule_id: schedule_id,
-          tracking_id: tracking_id
+      fetch(Config.API_URL + '/ProvApi/confirm_request', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            type: type,
+            schedule_id: schedule_id,
+            tracking_id: tracking_id
+          })
         })
-      })
         .then(res => res.json())
         .then(res => {
           this.setState({
@@ -141,14 +138,12 @@ export default class Home extends React.Component {
               dialogMessage: "Success! Your selection has been confirmed.",
             });
             this._refresh();
-          }
-          else if (res == 'error') {
+          } else if (res == 'error') {
             this.setState({
               showDialog: true,
               dialogMessage: "Oops! An error occured.",
             });
-          }
-          else {
+          } else {
             this.setState({
               showDialog: true,
               dialogMessage: "Oops! An error occured.",
