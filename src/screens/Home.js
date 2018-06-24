@@ -244,7 +244,7 @@ export default class Home extends React.Component {
           colors="#6c5ce7"
           progressBackgroundColor="#6c5ce7"
         >
-          <Text style={styles.title}>List of your Schedules</Text>
+          <Text style={styles.title}>Pending Schedules</Text>
           {!this.state.showLoading
             ? (
               this.state.customers ? (

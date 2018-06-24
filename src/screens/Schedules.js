@@ -58,11 +58,10 @@ export default class Schedules extends React.Component {
       schedule_id: '',
       provider_id: ''
     }
-    this._handleConfirm = this._handleConfirm.bind(this);
     this._refresh = this._refresh.bind(this);
     this.loadData = this.loadData.bind(this);
     this._handleAddReview = this._handleAddReview.bind(this);
-    
+    this._handleComplete = this._handleComplete.bind(this);
   }
   setModalVisible = (visible, schedule_id, provider_id) => {
     this.setState({
@@ -184,12 +183,13 @@ export default class Schedules extends React.Component {
 _refresh() {
   this.loadData()
 }
-_handleConfirm = (schedule_id, provider_id) => () => {
+
+_handleComplete = (schedule_id, provider_id) => () => {
   //alert(id)
   //this.setState({ showConfirm: false })
   AsyncStorage.getItem('jwt').then(token => {
     this.setState({ showLoading: true})
-    fetch(Config.API_URL+'/ProvApi/confirm_schedule', {
+    fetch(Config.API_URL+'/ProvApi/mark_complete', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -275,7 +275,7 @@ _handleConfirm = (schedule_id, provider_id) => () => {
       {
         this.state.schedules.map((section, index) => {
           return (
-            <Card title={section['Schedule']['datetime']} key={index}>
+            <Card title={section['Schedule'].datetime} key={index}>
       <View style={styles.contentContainer}>
           <Text style={styles.contentHeader}>Customer Name</Text>
         <Text style={styles.contentText}>{section['Customer'].full_name}</Text>
@@ -290,8 +290,26 @@ _handleConfirm = (schedule_id, provider_id) => () => {
       </View>
       <View style={styles.contentContainer}>
           <Text style={styles.contentHeader}>Status</Text>
-        <Text style={styles.contentText}>Completed</Text>
+        <Text style={styles.contentText}>{section['Schedule'].status}</Text>
       </View>
+      {
+        section['Schedule'].provider_confirm == 'yes' ? 
+        <Button disabled success small style={styles.confirmButton}>
+          <Text style={styles.confirmButtonText}>Schedule Confirmed</Text>
+        </Button> : 
+        <Button disabled danger small style={styles.confirmButton}>
+        <Text style={styles.confirmButtonText}>Schedule not Completed</Text>
+      </Button>
+      }
+      <View style={{marginBottom: 10}}></View>
+        {
+      section['Schedule'].prov_mark_completed == 'no' ? 
+      <Button danger onPress={this._handleComplete(section['Schedule'].id)}  small style={styles.confirmButton}>
+        <Text style={styles.confirmButtonText}>Mark as Complete</Text>
+      </Button> :
+      null
+    }
+    
 
       </Card>
           );
@@ -326,7 +344,7 @@ _handleConfirm = (schedule_id, provider_id) => () => {
           onTouchOutside={() => this.setState({ showConfirm: false })}
           positiveButton={{
             title: 'YES',
-            onPress: this._handleConfirm,
+            onPress: this._handleComplete,
           }}
           negativeButton={{
             title: 'NO',
@@ -436,5 +454,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginLeft: 80,
     padding: 4
+  },
+  confirmButtonText: {
+    fontFamily: 'NunitoSans-Regular',
+    color: '#fff',
+    padding:4,
+    textAlign: 'center'
+  },
+  confirmButton: {
+    width: '65%',
+    //marginTop: 10,
+    //backgroundColor: '#6c5ce7',
+    justifyContent: 'center',
+    marginLeft: 60,
+    padding: 2
   }
 })
