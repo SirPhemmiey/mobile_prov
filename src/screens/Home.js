@@ -41,7 +41,7 @@ export default class Home extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      showLoading: false,
+      showLoading: true,
       customers: [],
       showDialog: false,
       dialogMessage: '',
@@ -49,7 +49,7 @@ export default class Home extends React.Component {
       dialogVisibleReject: false,
     };
     //this.loadData = this.loadData.bind();
-    this._refresh = this._refresh.bind();
+    //this._refresh = this._refresh.bind();
     //this._handleComplete = this._handleComplete.bind();
   }
 
@@ -65,9 +65,6 @@ export default class Home extends React.Component {
         })
         .then(res => res.json())
         .then(res => {
-          // this.setState({
-          //   showLoader: false
-          // })
           if (res == 'empty') {
             this.setState({
               //showDialog: true,
@@ -102,18 +99,19 @@ export default class Home extends React.Component {
           this.setState({
             showDialog: true,
             dialogMessage: err.message + "lol here",
-            showLoader: false
+            showLoader: false,
+            showLoading: false,
           })
         })
     })
   }
-  _refresh() {
+  _refresh = () =>  {
     this.loadData();
   };
   _sendRequest = (type, schedule_id, tracking_id) => {
-    // this.setState({
-    //   showLoading: true,
-    // });
+    this.setState({
+      showLoading: true,
+    });
     AsyncStorage.getItem('jwt').then(token => {
       fetch(Config.API_URL + '/ProvApi/confirm_request', {
           method: 'POST',
@@ -135,9 +133,9 @@ export default class Home extends React.Component {
           if (res == 'done') {
             this.setState({
               showDialog: true,
-              dialogMessage: "Success! Your selection has been confirmed.",
+              dialogMessage: "Success! Your selection has been confirmed. You can now track the customer by navigating to the Track tab.",
             });
-            this._refresh();
+            this.loadData();
           } else if (res == 'error') {
             this.setState({
               showDialog: true,
@@ -223,18 +221,23 @@ export default class Home extends React.Component {
   render() {
     return (
       <Container>
+        <Header style={{ backgroundColor: '#6c5ce7' }}>
+         <Left>
+         <Button transparent iconLeft onPress={() => goBack()}>
+            <Icon ios='logo-buffer'
+                android='logo-buffer' />
+          </Button>
+         </Left>
+         <Body>
+             <Title style={{fontFamily: 'NunitoSans-Regular'}}>Home</Title>
+         </Body>
+         <Right />
+        </Header>
         <StatusBar
-          barStyle="light-content"
-          backgroundColor="#6c5ce7"
+          barStyle='light-content'
+          backgroundColor='#6c5ce7'
           networkActivityIndicatorVisible
         />
-        <Header style={{ backgroundColor: '#6c5ce7' }}>
-          <Left/>
-          <Body>
-            <Title style={{fontFamily: 'NunitoSans-Regular'}}>Home</Title>
-          </Body>
-          <Right />
-        </Header>
 
         <PTRView
           onRefresh={this._refresh}
@@ -247,7 +250,7 @@ export default class Home extends React.Component {
               this.state.customers ? (
                 this.state.customers.map((customer, index) => {
                   return (
-                    <Card title="Schedule + {index}" key={index}>
+                    <Card title={`Schedule ${index+1}`} key={index}>
                       <View
                         style={{
                           flexDirection: 'row',

@@ -96,12 +96,13 @@ export default class Mapping extends React.Component {
               provider_latitude: res.provider_lat,
               provider_long: res.provider_long,
             })
-          } else {
-            this.setState({
-              showDialog: true,
-              dialogMessage: 'You have no pending schedule',
-            })
-          }
+          } 
+          // else {
+          //   this.setState({
+          //     showDialog: true,
+          //     dialogMessage: 'You have no pending schedule',
+          //   })
+          // }
         })
         .catch(err => {
           this.setState({

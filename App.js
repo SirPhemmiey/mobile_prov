@@ -19,9 +19,9 @@ import EditProfile from './src/screens/EditProfile'
 const tabStack = TabNavigator(
   {
      Home: {screen: Home},
-    //Track: { screen: Mapping },
-    //Schedules: { screen: Schedules},
-    //Settings: { screen: Settings },
+    Schedules: { screen: Schedules},
+    Track: { screen: Mapping },
+    Settings: { screen: Settings },
   },
   {
     navigationOptions: ({ navigation }) => {
@@ -78,7 +78,7 @@ const tabStack = TabNavigator(
       },
     },
     headerMode: 'none',
-    //initialRouteName: 'Home'
+    initialRouteName: 'Home'
   }
 )
 

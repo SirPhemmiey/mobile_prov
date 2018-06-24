@@ -177,6 +177,13 @@ export default class EditProfile extends React.Component {
                 dialogMessage: 'Oops! An error occured while updating your profile. Please try again'
               })
             }
+            else if (res == 'before') {
+              this.setState({
+                showLoading: false,
+                showDialog: true,
+                dialogMessage: 'You cannot update your profile while you have a pending schedule. Please retry when the schedule is completed.'
+              })
+            }
           })
           .catch(err => {
             this.setState({
