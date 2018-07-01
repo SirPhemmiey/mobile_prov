@@ -7,29 +7,30 @@ import { Dialog } from 'react-native-simple-dialogs';
 import { Container, Content, Footer,Button,Header,Left,Right,Title,Body,Icon } from 'native-base';
 const { width, height } = Dimensions.get('window')
 
-const LATITUDE_DELTA = 0.01
-const LONGITUDE_DELTA = 0.01
 export default class Mapping extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      region: {
-        latitude: '',
-        longitude: ''
-      },
+      // region: {
+      //   latitude: '',
+      //   longitude: ''
+      // },
+      region: [],
       latitude: null,
       longitude: null,
-      provider_lat: '',
-      provider_long: '',
+      customer_lat: null,
+      customer_long: null,
       error: null,
       flag: false
     }
+    this.mapView = null;
+
   }
-  //   _onRegionChange (region) {
-  //     this.setState({
-  //       region: region
-  //     })
-  //   }
+  _onRegionChange (region) {
+    this.setState({
+      region: region
+    })
+  }
   _checkStatus = () => {
     AsyncStorage.getItem('jwt').then(token => {
       fetch(Config.API_URL+'/ProvApi/customer_provider_confirm', {
@@ -86,15 +87,17 @@ export default class Mapping extends React.Component {
       })
         .then(res => res.json())
         .then(res => {
+          console.warn(res)
           this.setState({
             showLoader: false
           })
           if (res != 'empty') {
             this.setState({
-              latitude: res.customer_lat,
-              longitude: res.customer_long,
-              provider_latitude: res.provider_lat,
-              provider_long: res.provider_long,
+              flag: true,
+              latitude: res.provider_lat,
+              longitude: res.provider_long,
+              customer_lat: res.customer_lat,
+              customer_long: res.customer_long,
             })
           } 
           // else {
@@ -161,18 +164,81 @@ export default class Mapping extends React.Component {
           <Content>
            {
              this.state.flag ? (
-              <MapView
-        style={styles.map}
-        initialRegion={{
-          latitude: parseFloat(this.state.latitude),
-          longitude: parseFloat(this.state.longitude),
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421
-        }}
-      >
-    
-      </MapView>
-             ) : null
+            <View style={styles.container}>
+              {
+                this.state.latitude != '' && this.state.longitude != '' ? (
+                  <MapView
+                  provider="google"
+                  toolbarEnabled={true}
+                  showsUserLocation={true}
+                  showsBuildings={true}
+                  showsTraffic={true}
+                  loadingEnabled={true}
+                  showsMyLocationButton={true}
+                  ref={c => this.mapView = c}
+                  onRegionChange={this.onRegionChange}
+       style={ styles.mapcontainer }
+       region={{
+         latitude: parseFloat(this.state.latitude),
+         longitude: parseFloat(this.state.longitude),
+         latitudeDelta: 0.0922,
+         longitudeDelta: 0.0421,
+       }}>
+
+       <MapView.Marker
+               coordinate={{
+                 latitude: parseFloat(this.state.latitude),
+         longitude: parseFloat(this.state.longitude),
+               }}
+               title={"You"}
+               description={"description"}
+              />
+              <MapView.Marker
+               coordinate={{
+                 latitude: parseFloat(this.state.customer_lat),
+         longitude: parseFloat(this.state.customer_long),
+               }}
+               title={"Provider"}
+               description={"description"}
+              />
+             
+              {
+                this.state.customer_lat != 0 ? 
+                (
+   <MapViewDirections
+              strokeWidth={3}
+              strokeColor="hotpink"
+       origin={{
+         latitude: parseFloat(this.state.latitude),
+   longitude: parseFloat(this.state.longitude),
+       }}
+       destination={{
+         latitude: parseFloat(this.state.customer_lat),
+   longitude: parseFloat(this.state.customer_long),
+       }}
+       waypoints={{
+        latitude: parseFloat(this.state.latitude),
+        longitude: parseFloat(this.state.longitude)
+       }}
+       apikey={"AIzaSyAC4G6iNMA_A5xyBxQGB4QMtmbt0Y7TwyA"}
+       onReady={(result) => {
+         this.mapView.fitToCoordinates(result.coordinates, {
+           edgePadding: {
+             right: (width / 20),
+             bottom: (height / 20),
+             left: (width / 20),
+             top: (height / 20),
+           }
+         });
+       }}  
+     />
+                ): null
+              }
+     </MapView>
+                ) : null
+              }
+            </View>
+             ) : <Text>Could not load map</Text>
            }
           </Content>
           <Dialog
@@ -215,11 +281,19 @@ export default class Mapping extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  map: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0
-  }
+  // map: {
+  //   position: 'absolute',
+  //   top: 0,
+  //   bottom: 0,
+  //   left: 0,
+  //   right: 0
+  // }
+  container: {
+    flex: 1,
+  },
+mapcontainer: {
+    flex: 1,
+    width: width,
+    height: height,
+  },
 })

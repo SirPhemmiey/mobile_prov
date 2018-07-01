@@ -8,8 +8,10 @@ import {
   StatusBar,
   Image,
   TouchableOpacity,
-  ToastAndroid
+  ToastAndroid,
+  NetInfo
 } from 'react-native';
+import OneSignal from 'react-native-onesignal';
 import Config from 'react-native-config';
 import {
   ProgressDialog,
@@ -213,9 +215,32 @@ export default class Home extends React.Component {
   //     dialogVisibleAccept: true,
   //   });
   // };
+  componentWillMount() {
+    OneSignal.setLogLevel(7, 0);
+    OneSignal.init(Config.ONESIGNAL_API_KEY, {
+      kOSSettingsKeyAutoPrompt: true
+    });
+    OneSignal.setLocationShared(true);
+    OneSignal.inFocusDisplaying(2)
+    //this.loadData()
+    NetInfo.isConnected.fetch().done(isConnected => {
+      if (isConnected) {
+        this.loadData();
+      }
+      else {
+        alert("no connected")
+      }
+    })
+    this.onReceived = this.onReceived.bind(this);
+    this.onOpened = this.onOpened.bind(this);
+
+    OneSignal.addEventListener('received', this.onReceived);
+    OneSignal.addEventListener('opened', this.onOpened);
+    //OneSignal.configure();  // <-- add this line
+  }
   componentDidMount() {
     //SplashScreen.hide()
-    this.loadData();
+    //this.loadData();
   }
 
   render() {
