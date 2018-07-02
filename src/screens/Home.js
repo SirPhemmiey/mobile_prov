@@ -231,11 +231,11 @@ export default class Home extends React.Component {
         alert("no connected")
       }
     })
-    this.onReceived = this.onReceived.bind(this);
-    this.onOpened = this.onOpened.bind(this);
+    // this.onReceived = this.onReceived.bind(this);
+    // this.onOpened = this.onOpened.bind(this);
 
-    OneSignal.addEventListener('received', this.onReceived);
-    OneSignal.addEventListener('opened', this.onOpened);
+    // OneSignal.addEventListener('received', this.onReceived);
+    // OneSignal.addEventListener('opened', this.onOpened);
     //OneSignal.configure();  // <-- add this line
   }
   componentDidMount() {
