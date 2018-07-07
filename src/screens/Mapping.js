@@ -87,7 +87,7 @@ export default class Mapping extends React.Component {
       })
         .then(res => res.json())
         .then(res => {
-          console.warn(res)
+          //console.warn(res)
           this.setState({
             showLoader: false
           })
@@ -143,7 +143,7 @@ export default class Mapping extends React.Component {
           <Left>
             <Button transparent>
               <Icon
-                onPress={() => navigation.goBack()}
+                onPress={() => goBack()}
                 ios='ios-arrow-back'
                 android='md-arrow-back'
               />
@@ -198,7 +198,7 @@ export default class Mapping extends React.Component {
                  latitude: parseFloat(this.state.customer_lat),
          longitude: parseFloat(this.state.customer_long),
                }}
-               title={"Provider"}
+               title={"Customer"}
                description={"description"}
               />
              
@@ -215,10 +215,6 @@ export default class Mapping extends React.Component {
        destination={{
          latitude: parseFloat(this.state.customer_lat),
    longitude: parseFloat(this.state.customer_long),
-       }}
-       waypoints={{
-        latitude: parseFloat(this.state.latitude),
-        longitude: parseFloat(this.state.longitude)
        }}
        apikey={"AIzaSyAC4G6iNMA_A5xyBxQGB4QMtmbt0Y7TwyA"}
        onReady={(result) => {
@@ -238,7 +234,7 @@ export default class Mapping extends React.Component {
                 ) : null
               }
             </View>
-             ) : <Text>Could not load map</Text>
+             ) : <Text>Nothing to display</Text>
            }
           </Content>
           <Dialog

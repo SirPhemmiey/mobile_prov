@@ -161,7 +161,7 @@ export default class Settings extends React.Component {
                 <Thumbnail
                   large
                   source={{
-                    uri: Config.API_URL + '/app/webroot/customer_pic/IMG_20171018_103905_661.jpg'
+                    uri: Config.PROVIDER_PIC + profile.pic
                   }}
                   resizeMode='cover'
                 />

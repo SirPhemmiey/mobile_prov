@@ -217,7 +217,7 @@ export default class Home extends React.Component {
   // };
   componentWillMount() {
     OneSignal.setLogLevel(7, 0);
-    OneSignal.init(Config.ONESIGNAL_API_KEY, {
+    OneSignal.init("d699f2ff-1a2e-4d43-8c64-2da4f6a61a27", {
       kOSSettingsKeyAutoPrompt: true
     });
     OneSignal.setLocationShared(true);
@@ -227,9 +227,9 @@ export default class Home extends React.Component {
       if (isConnected) {
         this.loadData();
       }
-      else {
-        alert("no connected")
-      }
+      // else {
+      //   alert("no connected")
+      // }
     })
     // this.onReceived = this.onReceived.bind(this);
     // this.onOpened = this.onOpened.bind(this);

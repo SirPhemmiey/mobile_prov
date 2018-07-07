@@ -38,19 +38,19 @@ export default class ChangePassword extends React.Component {
   }
 
   _handleChangePassword = () => {
-    this.setState({ showLoading: true})
       let {oldPassword, newPassword, newPassword2} = this.state;
     if (oldPassword != '' && newPassword != '' && newPassword2 != '') {
-      //this.setState({ showLoading: true })
+      this.setState({ showLoading: true })
       AsyncStorage.getItem('jwt').then(token => {
-        fetch('http://192.168.56.1/stylefit/ProvApi/change_password', {
+        fetch(Config.API_URL + '/provapi/change_password', {
         method: 'POST',
          headers: {
+          'Accept': 'application/json',
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
+         Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({
-          oldPassword: this.state.password,
+          oldPassword: this.state.oldPassword,
           newPassword: this.state.newPassword,
           confirmPassword: this.state.newPassword2
         })
@@ -72,16 +72,16 @@ export default class ChangePassword extends React.Component {
           else if (res == 'oldDiff') {
             this.setState({
                 showDialog: true,
-                dialogMessage: "Old not"
+                dialogMessage: "Your old password does not match"
               })
           }
           else if (res == 'newPassDiff') {
             this.setState({
                 showDialog: true,
-                dialogMessage: "New password is diff"
+                dialogMessage: "New passwords are different"
               })
           }
-          console.warn(res)
+          
         })
         .catch(err => {
           this.setState({
@@ -89,11 +89,11 @@ export default class ChangePassword extends React.Component {
             showDialog: true,
             dialogMessage: err.message
           })
-          console.warn(err);
         })
       })
     } else {
       this.setState({
+        showLoading: false,
         showDialog: true,
         dialogMessage: 'All fields are required'
       })
@@ -163,9 +163,6 @@ export default class ChangePassword extends React.Component {
                 onChangeText={newPassword2 => this.setState({ newPassword2 })}
               />
             </Item>
-            <Text>old password id is {this.state.oldPassword}</Text>
-              <Text>new password is {this.state.newPassword}</Text>
-              <Text>Confirm password is {this.state.newPassword2}</Text>
             <Button
               bordered
               small

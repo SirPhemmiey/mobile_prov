@@ -12,7 +12,6 @@ import {
   TouchableHighlight,
   TextInput
 } from 'react-native'
-import { withNavigation } from 'react-navigation';
 import Config from 'react-native-config';
 import { Card } from 'react-native-elements';
 import {
