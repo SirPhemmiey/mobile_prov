@@ -96,25 +96,104 @@ export default class Settings extends React.Component {
   }
   _handleUpload = () => {
     var options = {
-      title: 'Select Avatar',
+      title: 'Choose a picture',
+      takePhotoButtonTitle:'Capture Photo',
+      quality: 1.0,
+      maxWidth: 1000,
+      maxHeight: 1000,
+      storageOptions: {
+        skipBackup: true,
+        path: 'images'
+      }
     }
-    ImagePicker.showImagePicker(options, response => {
-      console.warn('Response = ', response)
-
+    ImagePicker.showImagePicker(options, response => {  
       if (response.didCancel) {
-        console.warn('User cancelled image picker')
+        //console.warn('User cancelled image picker')
       } else if (response.error) {
-        console.warn('ImagePicker Error: ', response.error)
+        //console.warn('ImagePicker Error: ', response.error)
+      } else if (response.customButton) {
+        //console.warn('Custom button tapped');
       } else {
-        let source = { uri: response.uri }
-      console.warn(source)
-
-        // You can also display the image using data:
-        // let source = { uri: 'data:image/jpeg;base64,' + response.data };
-
-        this.setState({
-          avatarSource: source
+        const data = new FormData();
+        data.append('image', {
+          uri: response.uri,
+          type: response.type,
+          name: response.fileName
+        });
+        AsyncStorage.getItem('jwt').then(token => {
+          this.setState({showLoading: true})
+         fetch(Config.API_URL + '/Provapi/upload_image', {
+           method: 'POST',
+           headers: {
+             'Accept': 'application/json',
+             'Content-Type': 'multipart/form-data',
+             'Authorization': `Bearer ${token}`
+           },
+           body: data
+         })
+         .then(res => res.json())
+         .then(res => {
+           if (res == 'done') {
+             this.setState({
+              showLoading: false,
+            })
+           ToastAndroid.showWithGravity(
+           'Uploaded successfully',
+           ToastAndroid.SHORT,
+           ToastAndroid.CENTER
+         )
+           } else if (res == 'error') {
+             this.setState({
+               showLoading: false,
+             })
+            ToastAndroid.showWithGravity(
+            'An error occured',
+            ToastAndroid.SHORT,
+            ToastAndroid.CENTER
+          )
+           }
+           else if (res == 'not_user') {
+             this.setState({
+               showLoading: false,
+             })
+             ToastAndroid.showWithGravity(
+              'Unauthorized access. Please logout and login again',
+              ToastAndroid.SHORT,
+              ToastAndroid.CENTER
+            )
+           }
+           else if (res == 'ext') {
+            this.setState({
+              showLoading: false,
+            })
+            ToastAndroid.showWithGravity(
+             'The file extension is not allowed',
+             ToastAndroid.SHORT,
+             ToastAndroid.CENTER
+           )
+           }
+           else {
+            this.setState({
+              showLoading: false,
+              showDialog: true, 
+              dialogTitle: 'Oops!',
+              dialogMessage: res
+            })
+           }
+         }) 
+         .catch(err => {
+           this.setState({
+             showLoading: false,
+             showDialog: true, 
+             dialogTitle: 'Error',
+             dialogMessage: 'An error occured.' + err.message
+           }) 
         })
+         
+         this.setState({
+           avatarSource: response.uri
+         })
+       })
       }
     })
   }

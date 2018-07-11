@@ -46,7 +46,6 @@ export default class Signup extends React.Component {
           password: this.state.password,
           email: this.state.email,
           phone: this.state.phone,
-          password: this.state.password,
           type: 'Provider'
         })
       })
