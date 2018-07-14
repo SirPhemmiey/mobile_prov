@@ -22,10 +22,13 @@ import {
   Text,
   View,
   TouchableOpacity,
+  ToastAndroid
 } from 'react-native'
 import Config from 'react-native-config'
 import { Avatar, Card, Divider } from 'react-native-elements'
 import ImagePicker from 'react-native-image-picker'
+import Image from 'react-native-image-progress';
+import ProgressBar from 'react-native-progress/Bar';
 const links = [
   {
     link: 'editProfile',
@@ -59,7 +62,7 @@ export default class Settings extends React.Component {
     }
     this.logout = this.logout.bind(this);
     this.navigateToScreen = this.navigateToScreen.bind(this);
-  }
+  } 
   logout(){
     let keys = ['jwt'];
     AsyncStorage.multiRemove(keys, err => {
@@ -237,13 +240,15 @@ export default class Settings extends React.Component {
               }}
             >
               <TouchableOpacity onPress={this._handleUpload}>
-                <Thumbnail
-                  large
-                  source={{
-                    uri: Config.PROVIDER_PIC + profile.pic
-                  }}
-                  resizeMode='cover'
-                />
+                <Image 
+                source={{
+                  uri: this.state.avatarSource ? this.state.avatarSource : Config.PROVIDER_PIC + profile.pic
+                }} 
+                indicator={ProgressBar} 
+                style={{
+                  width: 320, 
+                  height: 240, 
+                }}/>
               </TouchableOpacity>
               <Text style={styles.title}>{profile.name}</Text>
             </View>
