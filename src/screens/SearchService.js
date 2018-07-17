@@ -156,8 +156,9 @@ export default class SearchService extends React.Component {
                         <Avatar
                           size='xlarge'
                           rounded
-                          source={{
-                            uri: Config.IMAGE_URL + provider['Provider']['pic']
+                           source={{
+                            uri: provider['Provider']['pic'] == ''
+                                ? Config.PROVIDER_URL+provider['Provider']['pic']: Config.PROVIDER_URL+'default.png'
                           }}
                           activeOpacity={0.7}
                           />

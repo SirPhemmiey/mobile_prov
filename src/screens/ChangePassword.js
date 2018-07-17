@@ -36,6 +36,9 @@ export default class ChangePassword extends React.Component {
       dialogMessage: ''
     }
   }
+  _focusNextField(nextField) {
+    this.refs[nextField]._root.focus()
+    }
 
   _handleChangePassword = () => {
       let {oldPassword, newPassword, newPassword2} = this.state;
@@ -133,7 +136,7 @@ export default class ChangePassword extends React.Component {
               <Input
                 style={styles.input}
                 returnKeyType='next'
-                onSubmitEditing={() => this.passwordInput.focus()}
+                onSubmitEditing={() => this._focusNextField('newPassword')}
                 onChangeText={oldPassword => this.setState({ oldPassword })}
                 secureTextEntry
               />
@@ -145,8 +148,8 @@ export default class ChangePassword extends React.Component {
               <Input
                 style={styles.input}
                 returnKeyType='next'
-                ref={input => (this.passwordInput = input)}
-                onSubmitEditing={() => this.password2Input.focus()}
+                ref="newPassword"
+                onSubmitEditing={() => this._focusNextField('confirmPassword')}
                 secureTextEntry
                 onChangeText={newPassword => this.setState({ newPassword })}
               />
@@ -158,7 +161,7 @@ export default class ChangePassword extends React.Component {
               <Input
                 style={styles.input}
                 returnKeyType='go'
-                ref={input => (this.password2Input = input)}
+                ref="confirmPassword"
                 secureTextEntry
                 onChangeText={newPassword2 => this.setState({ newPassword2 })}
               />

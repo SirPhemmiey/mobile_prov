@@ -25,11 +25,13 @@
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
-      </activity>
+      </activity> 
       <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
       <meta-data
       android:name="com.google.android.geo.API_KEY"
-      android:value="AIzaSyAC4G6iNMA_A5xyBxQGB4QMtmbt0Y7TwyA"/>
+      android:value="@string/GOOGLE_MAPS_API_KEY"/>
+      <meta-data android:name="com.bugsnag.android.API_KEY"
+    android:value="50bf6bc69efcd3a44d1dc317f8acc7c8"/>
     </application>
 
 </manifest>

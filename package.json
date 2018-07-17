@@ -5,9 +5,10 @@
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "test": "jest",
-    "custom-android": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res && react-native run-android"
+    "custom-run-android": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res && react-native run-android"
   },
   "dependencies": {
+    "bugsnag-react-native": "^2.10.0",
     "native-base": "^2.4.4",
     "react": "16.3.1",
     "react-native": "0.55.4",
@@ -15,6 +16,7 @@
     "react-native-config": "^0.11.5",
     "react-native-device-info": "^0.21.5",
     "react-native-elements": "^0.19.1",
+    "react-native-google-maps-directions": "^2.0.0",
     "react-native-google-places": "^2.5.0",
     "react-native-image-picker": "^0.26.10",
     "react-native-image-progress": "^1.1.1",

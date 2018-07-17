@@ -10,7 +10,8 @@ import {
   Item,
   Input,
   Button,
-  View
+  View,
+  Icon
 } from 'native-base'
 import Config from 'react-native-config'
 import { NavigationActions } from 'react-navigation'
@@ -33,7 +34,11 @@ export default class Signup extends React.Component {
       dialogMessage: ''
     }
     this._handleSignup = this._handleSignup.bind(this)
+    
   }
+  _focusNextField(nextField) {
+    this.refs[nextField]._root.focus()
+    }
 
   _handleSignup(){
       const { full_name, email, phone, password } = this.state;
@@ -99,58 +104,58 @@ export default class Signup extends React.Component {
             <Text style={styles.title}>Provider Signup</Text>
           </View>
           <Form>
-            <Item floatingLabel>
+            <Item stackedLabel>
               <Label style={{ fontFamily: 'NunitoSans-Regular' }}>
                 Full Name
               </Label>
               <Input
                 style={styles.input}
                 returnKeyType='next'
-                onSubmitEditing={() => this.emailInput.focus()}
+                onSubmitEditing={() => this._focusNextField('email')}
                 onChangeText={full_name => this.setState({ full_name })}
                 keyboardType='email-address'
                 autoCapitalize='none'
                 autoCorrect={false}
               />
             </Item>
-            <Item floatingLabel>
+            <Item stackedLabel>
               <Label style={{ fontFamily: 'NunitoSans-Regular' }}>
                 Email
               </Label>
               <Input
                 style={styles.input}
                 returnKeyType='next'
-                ref={input => (this.emailInput = input)}
-                onSubmitEditing={() => this.phoneInput.focus()}
+                ref="email"
+                onSubmitEditing={() => this._focusNextField('phone')}
                 onChangeText={email => this.setState({ email })}
                 keyboardType='email-address'
                 autoCapitalize='none'
                 autoCorrect={false}
               />
             </Item>
-            <Item floatingLabel>
+            <Item stackedLabel>
               <Label style={{ fontFamily: 'NunitoSans-Regular' }}>
                 Phone
               </Label>
               <Input
                 style={styles.input}
                 returnKeyType='next'
-                ref={input => (this.phoneInput = input)}
-                onSubmitEditing={() => this.passwordInput.focus()}
+                ref="phone"
+                onSubmitEditing={() => this._focusNextField('password')}
                 onChangeText={phone => this.setState({ phone })}
                 keyboardType='phone-pad'
                 autoCapitalize='none'
                 autoCorrect={false}
               />
             </Item>
-            <Item floatingLabel last>
+            <Item stackedLabel last>
               <Label style={{ fontFamily: 'NunitoSans-Regular' }}>
                 Password
               </Label>
               <Input
                 style={styles.input}
                 returnKeyType='go'
-                ref={input => (this.passwordInput = input)}
+                ref="password"
                 secureTextEntry
                 onChangeText={password => this.setState({ password })}
               />

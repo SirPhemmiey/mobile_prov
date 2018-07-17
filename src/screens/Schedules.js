@@ -6,7 +6,7 @@ import {
   AsyncStorage,
   ActivityIndicator,
   StatusBar,
-  Image,
+  Image, 
   TouchableOpacity,
   Modal, 
   TouchableHighlight,

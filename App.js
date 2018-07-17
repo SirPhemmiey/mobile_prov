@@ -13,6 +13,8 @@ import ForgotPassword from './src/screens/ForgotPassword';
 import Schedules from './src/screens/Schedules';
 import Mapping from './src/screens/Mapping';
 import EditProfile from './src/screens/EditProfile'
+import { Client } from 'bugsnag-react-native';
+const bugsnag = new Client();
 
 
 
@@ -134,6 +136,7 @@ const Application = StackNavigator(
 
 export default class App extends React.Component {
   render () {
+    bugsnag.notify(new Error("Test error. Lol - Provider"));
     //console.disableYellowBox = true
     return <Application />
   }

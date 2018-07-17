@@ -33,7 +33,11 @@ export default class Login extends React.Component {
     }
     this._handleLogin = this._handleLogin.bind(this)
     //SplashScreen.show()
+   
   }
+  _focusNextField(nextField) {
+    this.refs[nextField]._root.focus()
+    }
 
   navigateToLogin = () => {
     const toHome = NavigationActions.reset({
@@ -137,7 +141,7 @@ export default class Login extends React.Component {
               <Input
                 style={styles.input}
                 returnKeyType='next'
-                onSubmitEditing={() => this.passwordInput.focus()}
+                onSubmitEditing={() => this._focusNextField('password')}
                 onChangeText={username => this.setState({ username })}
                 keyboardType='email-address'
                 autoCapitalize='none'
@@ -151,7 +155,7 @@ export default class Login extends React.Component {
               <Input
                 style={styles.input}
                 returnKeyType='go'
-                ref={input => (this.passwordInput = input)}
+                ref="password"
                 secureTextEntry
                 onChangeText={password => this.setState({ password })}
               />

@@ -196,7 +196,7 @@ export default class ProviderDetails extends React.Component {
               <ImageBackground
                 source={{
                   uri: this.state.details.pic == ''
-                      ? Config.API_URL+'/app/webroot/customer_pic/hqdefault.jpg'
+                      ? Config.PROVIDER_URL+'default.png'
                       : this.state.details.pic
                 }}
                 resizeMode='cover'

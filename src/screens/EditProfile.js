@@ -60,6 +60,9 @@ export default class EditProfile extends React.Component {
     this._openPlacePicker = this._openPlacePicker.bind(this);
     this._saveData = this._saveData.bind(this)
   }
+  _focusNextField(nextField) {
+    this.refs[nextField]._root.focus()
+    }
   loadData() {
     const { navigation } = this.props
     AsyncStorage.getItem('jwt').then(token => {

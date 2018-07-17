@@ -3,9 +3,9 @@ import { StyleSheet, Dimensions, AsyncStorage,View,Text, StatusBar } from 'react
 import MapView, { Marker } from 'react-native-maps'
 import MapViewDirections from 'react-native-maps-directions'
 import Config from 'react-native-config';
-import { Dialog } from 'react-native-simple-dialogs';
 import { Container, Content, Footer,Button,Header,Left,Right,Title,Body,Icon } from 'native-base';
 const { width, height } = Dimensions.get('window')
+import getDirections from 'react-native-google-maps-directions'
 
 export default class Mapping extends React.Component {
   constructor (props) {
@@ -21,7 +21,8 @@ export default class Mapping extends React.Component {
       customer_lat: null,
       customer_long: null,
       error: null,
-      flag: false
+      flag: false,
+      directionsResult: ''
     }
     this.mapView = null;
 
@@ -134,6 +135,25 @@ export default class Mapping extends React.Component {
    // this._checkStatus();
     //this._getCurrentLocation()
   }
+  showLocation(e) {
+    this.mapView.fitToElements(true)
+    }
+    handleGetGoogleMapDirections = () => {
+      const data = {
+        destination: {
+          latitude: this.state.customer_lat,
+          longitude: this.state.customer_long
+        },
+          params: [
+              {
+                  key: "travelmode",
+                  value: "driving"
+              }
+          ]
+      };
+
+      getDirections(data)
+  };
   render () {
     const { goBack }  = this.props.navigation
     return (
@@ -169,6 +189,7 @@ export default class Mapping extends React.Component {
                 this.state.latitude != '' && this.state.longitude != '' ? (
                   <MapView
                   provider="google"
+                  mapType='standard'
                   toolbarEnabled={true}
                   showsUserLocation={true}
                   showsBuildings={true}
@@ -177,12 +198,13 @@ export default class Mapping extends React.Component {
                   showsMyLocationButton={true}
                   ref={c => this.mapView = c}
                   onRegionChange={this.onRegionChange}
+                  onPress={(value) => this.showLocation(value)}
        style={ styles.mapcontainer }
        region={{
          latitude: parseFloat(this.state.latitude),
          longitude: parseFloat(this.state.longitude),
-         latitudeDelta: 0.0922,
-         longitudeDelta: 0.0421,
+         latitudeDelta: Math.abs(this.state.latitude - this.state.customer_lat) + Math.abs(this.state.latitude - this.state.customer_lat) * .1,
+         longitudeDelta: Math.abs(this.state.longitude - this.state.customer_long) + Math.abs(this.state.longitude - this.state.customer_long) * .1
        }}>
 
        <MapView.Marker
@@ -190,24 +212,28 @@ export default class Mapping extends React.Component {
                  latitude: parseFloat(this.state.latitude),
          longitude: parseFloat(this.state.longitude),
                }}
-               title={"You"}
-               description={"description"}
-              />
+              >
+              <MapView.Callout>
+                            <Text style={{fontFamily:'NunitoSans-Regular'}}>You are currently here</Text>
+                        </MapView.Callout>
+              </MapView.Marker>
               <MapView.Marker
                coordinate={{
                  latitude: parseFloat(this.state.customer_lat),
          longitude: parseFloat(this.state.customer_long),
                }}
-               title={"Customer"}
-               description={"description"}
-              />
+               >
+               <MapView.Callout onPress={this.handleGetGoogleMapDirections}>
+                            <Text>Customer is here. Click to Get Direction details</Text>
+                        </MapView.Callout>
+              </MapView.Marker>
              
               {
                 this.state.customer_lat != 0 ? 
                 (
    <MapViewDirections
-              strokeWidth={3}
-              strokeColor="hotpink"
+             strokeWidth={5}
+              strokeColor="#6c5ce7"
        origin={{
          latitude: parseFloat(this.state.latitude),
    longitude: parseFloat(this.state.longitude),
@@ -216,8 +242,9 @@ export default class Mapping extends React.Component {
          latitude: parseFloat(this.state.customer_lat),
    longitude: parseFloat(this.state.customer_long),
        }}
-       apikey={"AIzaSyAC4G6iNMA_A5xyBxQGB4QMtmbt0Y7TwyA"}
+       apikey={Config.GOOGLE_MAPS_API_KEY}
        onReady={(result) => {
+        this.setState({ directionsResult: result})
          this.mapView.fitToCoordinates(result.coordinates, {
            edgePadding: {
              right: (width / 20),
@@ -233,44 +260,21 @@ export default class Mapping extends React.Component {
      </MapView>
                 ) : null
               }
+              <View style={styles.button}>
+             <Button light>
+               <Text style={{fontFamily: 'NunitoSans-Regular'}}>
+               Distance: {this.state.directionsResult.distance}
+               </Text>
+               <View style={{marginLeft:15}}></View>
+               <Text style={{fontFamily: 'NunitoSans-Regular'}}>
+               Duration: {this.state.directionsResult.duration}
+               </Text>
+             </Button>
+           </View>
             </View>
              ) : <Text>Nothing to display</Text>
            }
           </Content>
-          <Dialog
-            visible={this.state.showDialog}
-            onTouchOutside={() => this.setState({ showDialog: false })}
-            contentStyle={{ justifyContent: 'center', alignItems: 'center' }}
-            animationType='fade'
-          >
-            <View>
-              <Text style={{fontFamily: 'NunitoSans-Regular'}}>
-                {this.state.dialogMessage}
-              </Text>
-            </View>
-            <Button
-              small
-              light
-              onPress={() => this.setState({ showDialog: false })}
-              style={{
-                justifyContent: 'center',
-                alignSelf: 'center',
-                marginTop: 20,
-                backgroundColor: '#6c5ce7',
-                padding: 3
-              }}
-            >
-              <Text
-                style={{
-                  fontFamily: 'NunitoSans-Regular',
-                  color: '#fff',
-                  padding: 4
-                }}
-              >
-                CLOSE
-              </Text>
-            </Button>
-          </Dialog>
         </Container>
     )
   }
@@ -284,12 +288,28 @@ const styles = StyleSheet.create({
   //   left: 0,
   //   right: 0
   // }
+  //   container: {
+  //     flex: 1,
+  //   },
+  // mapcontainer: {
+  //     flex: 1,
+  //     width: width,
+  //     height: height,
+  //   },
   container: {
     flex: 1,
   },
-mapcontainer: {
-    flex: 1,
+  mapcontainer: {
     width: width,
     height: height,
+    zIndex: -1
   },
+  button: {
+    flex: 10,
+    position: 'absolute',
+    top: 550,
+    marginLeft: 100,
+    marginTop: 100,
+    zIndex: 10,
+  }
 })
