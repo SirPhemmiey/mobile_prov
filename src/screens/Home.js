@@ -35,6 +35,7 @@ import {
 } from 'native-base';
 import PTRView from 'react-native-pull-to-refresh';
 import SplashScreen from 'react-native-splash-screen'
+import RNRestart from 'react-native-restart';
 
 export default class Home extends React.Component {
   static navigationOptions = {
@@ -50,12 +51,12 @@ export default class Home extends React.Component {
       dialogVisibleAccept: false,
       dialogVisibleReject: false,
     };
-    //this.loadData = this.loadData.bind();
-    //this._refresh = this._refresh.bind();
+    this.loadData = this.loadData.bind(this);
+    this._refresh = this._refresh.bind(this);
     //this._handleComplete = this._handleComplete.bind();
   }
 
-  loadData = () => {
+  loadData(){
     AsyncStorage.getItem('jwt').then(token => {
       fetch(Config.API_URL + '/ProvApi/home', {
           method: 'GET',
@@ -107,7 +108,7 @@ export default class Home extends React.Component {
         })
     })
   }
-  _refresh = () =>  {
+  _refresh() {
     this.loadData();
   };
   _sendRequest = (type, schedule_id, tracking_id) => {
@@ -137,7 +138,10 @@ export default class Home extends React.Component {
               showDialog: true,
               dialogMessage: "Success! Your selection has been confirmed. You can now track the customer by navigating to the Track tab.",
             });
-            this.loadData();
+            setTimeout(() => {
+              this.setState({showDialog: false})
+              RNRestart.Restart();
+            }, 2000);
           } else if (res == 'error') {
             this.setState({
               showDialog: true,
@@ -217,20 +221,20 @@ export default class Home extends React.Component {
   // };
   componentWillMount() {
     OneSignal.setLogLevel(7, 0);
-    OneSignal.init("d699f2ff-1a2e-4d43-8c64-2da4f6a61a27", {
+    OneSignal.init(Config.ONESIGNAL_API_KEY, {
       kOSSettingsKeyAutoPrompt: true
     });
     OneSignal.setLocationShared(true);
     OneSignal.inFocusDisplaying(2)
     //this.loadData()
-    NetInfo.isConnected.fetch().done(isConnected => {
-      if (isConnected) {
-        this.loadData();
-      }
+    //NetInfo.isConnected.fetch().done(isConnected => {
+     // if (isConnected) {
+     //   this.loadData();
+      //}
       // else {
       //   alert("no connected")
       // }
-    })
+   // })
     // this.onReceived = this.onReceived.bind(this);
     // this.onOpened = this.onOpened.bind(this);
 
@@ -240,7 +244,7 @@ export default class Home extends React.Component {
   }
   componentDidMount() {
     //SplashScreen.hide()
-    //this.loadData();
+    this.loadData();
   }
 
   render() {
@@ -248,9 +252,9 @@ export default class Home extends React.Component {
       <Container>
         <Header style={{ backgroundColor: '#6c5ce7' }}>
          <Left>
-         <Button transparent iconLeft onPress={() => goBack()}>
+         <Button transparent iconLeft>
             <Icon ios='logo-buffer'
-                android='logo-buffer' />
+                android='logo-buffer'/>
           </Button>
          </Left>
          <Body>

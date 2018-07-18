@@ -18,7 +18,6 @@ import {
   Body
 } from 'native-base'
 import Config from 'react-native-config'
-import { NavigationActions } from 'react-navigation'
 import { ProgressDialog, Dialog } from 'react-native-simple-dialogs'
 import RNPaystack from 'react-native-paystack'
 

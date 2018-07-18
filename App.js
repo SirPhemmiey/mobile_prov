@@ -136,7 +136,7 @@ const Application = StackNavigator(
 
 export default class App extends React.Component {
   render () {
-    bugsnag.notify(new Error("Test error. Lol - Provider"));
+    //bugsnag.notify(new Error("Test error. Lol - Provider"));
     //console.disableYellowBox = true
     return <Application />
   }

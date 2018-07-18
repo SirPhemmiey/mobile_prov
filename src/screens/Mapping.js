@@ -1,20 +1,16 @@
 import React from 'react'
-import { StyleSheet, Dimensions, AsyncStorage,View,Text, StatusBar } from 'react-native'
+import { StyleSheet, Dimensions, AsyncStorage,View,Text, StatusBar, ToastAndroid, TouchableOpacity } from 'react-native'
 import MapView, { Marker } from 'react-native-maps'
 import MapViewDirections from 'react-native-maps-directions'
 import Config from 'react-native-config';
-import { Container, Content, Footer,Button,Header,Left,Right,Title,Body,Icon } from 'native-base';
+import { Dialog } from 'react-native-simple-dialogs';
+import { Container, Content, Footer,Button, Header, Left, Icon, Body, Title, Right } from 'native-base';
 const { width, height } = Dimensions.get('window')
-import getDirections from 'react-native-google-maps-directions'
 
 export default class Mapping extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      // region: {
-      //   latitude: '',
-      //   longitude: ''
-      // },
       region: [],
       latitude: null,
       longitude: null,
@@ -23,15 +19,15 @@ export default class Mapping extends React.Component {
       error: null,
       flag: false,
       directionsResult: ''
-    }
+    } 
     this.mapView = null;
-
   }
-  _onRegionChange (region) {
-    this.setState({
-      region: region
-    })
-  }
+  
+    _onRegionChange (region) {
+      this.setState({
+        region: region
+      })
+    }
   _checkStatus = () => {
     AsyncStorage.getItem('jwt').then(token => {
       fetch(Config.API_URL+'/ProvApi/customer_provider_confirm', {
@@ -47,14 +43,20 @@ export default class Mapping extends React.Component {
             showLoader: false
           })
           if (res == 'pending') {
-            this.setState({
-              showDialog: true,
-              flag: true,
-              dialogMessage: 'Provider hasn\'t confirmed the schedule. Please check back'
-            })
-            setTimeout(() => {
-              this.props.navigation.navigate("tabStack")
-            }, 3000)
+            // this.setState({
+            //   showDialog: true,
+            //   flag: true,
+            //   dialogMessage: 'Provider hasn\'t confirmed the schedule. Please check back'
+            // })
+            
+            ToastAndroid.showWithGravity(
+              'You have a pending schedule.',
+              ToastAndroid.LONG,
+              ToastAndroid.CENTER
+          )
+          setTimeout(() => {
+            this.props.navigation.navigate("tabStack")
+          }, 3000)
           }
           // else if (res == 'both_confirmed') {
           //   this.setState({
@@ -88,9 +90,8 @@ export default class Mapping extends React.Component {
       })
         .then(res => res.json())
         .then(res => {
-          //console.warn(res)
           this.setState({
-            showLoader: false
+            showLoader: false,
           })
           if (res != 'empty') {
             this.setState({
@@ -103,9 +104,15 @@ export default class Mapping extends React.Component {
           } 
           // else {
           //   this.setState({
-          //     showDialog: true,
-          //     dialogMessage: 'You have no pending schedule',
+          //     flag: false,
+          //     // showDialog: true,
+          //     // dialogMessage: 'You have no pending schedule',
           //   })
+          //   ToastAndroid.showWithGravity(
+          //   'You have no pending schedule',
+          //   ToastAndroid.SHORT,
+          //   ToastAndroid.CENTER
+          // )
           // }
         })
         .catch(err => {
@@ -130,9 +137,9 @@ export default class Mapping extends React.Component {
         { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
   );
   }
-  componentWillMount () {
+  componentDidMount () {
     this._getProvLocation()
-   // this._checkStatus();
+    //this._checkStatus();
     //this._getCurrentLocation()
   }
   showLocation(e) {
@@ -155,42 +162,20 @@ export default class Mapping extends React.Component {
       getDirections(data)
   };
   render () {
-    const { goBack }  = this.props.navigation
+    const { navigation } = this.props
     return (
         <Container>
-        <Header style={{ backgroundColor: '#6c5ce7' }}>
-
-          <Left>
-            <Button transparent>
-              <Icon
-                onPress={() => goBack()}
-                ios='ios-arrow-back'
-                android='md-arrow-back'
-              />
-            </Button>
-          </Left>
-          <Body>
-            <Title style={{ fontFamily: 'NunitoSans-Regular' }}>
-              Mapping
-            </Title>
-          </Body>
-          <Right />
-        </Header>
-          <StatusBar
-    barStyle='light-content'
-    backgroundColor='#6c5ce7'
-    networkActivityIndicatorVisible
-  />
+          
           <Content>
            {
              this.state.flag ? (
             <View style={styles.container}>
               {
                 this.state.latitude != '' && this.state.longitude != '' ? (
-                  <MapView
+                  <MapView 
                   provider="google"
                   mapType='standard'
-                  toolbarEnabled={true}
+					        toolbarEnabled={true}
                   showsUserLocation={true}
                   showsBuildings={true}
                   showsTraffic={true}
@@ -201,19 +186,19 @@ export default class Mapping extends React.Component {
                   onPress={(value) => this.showLocation(value)}
        style={ styles.mapcontainer }
        region={{
-         latitude: parseFloat(this.state.latitude),
-         longitude: parseFloat(this.state.longitude),
-         latitudeDelta: Math.abs(this.state.latitude - this.state.customer_lat) + Math.abs(this.state.latitude - this.state.customer_lat) * .1,
-         longitudeDelta: Math.abs(this.state.longitude - this.state.customer_long) + Math.abs(this.state.longitude - this.state.customer_long) * .1
-       }}>
+        latitude: parseFloat(this.state.latitude),
+        longitude: parseFloat(this.state.longitude),
+        latitudeDelta: Math.abs(this.state.latitude - this.state.customer_lat) + Math.abs(this.state.latitude - this.state.customer_lat) * .1,
+        longitudeDelta: Math.abs(this.state.longitude - this.state.customer_long) + Math.abs(this.state.longitude - this.state.customer_long) * .1
+      }}>
 
-       <MapView.Marker
+              <MapView.Marker
                coordinate={{
                  latitude: parseFloat(this.state.latitude),
          longitude: parseFloat(this.state.longitude),
                }}
               >
-              <MapView.Callout>
+                <MapView.Callout>
                             <Text style={{fontFamily:'NunitoSans-Regular'}}>You are currently here</Text>
                         </MapView.Callout>
               </MapView.Marker>
@@ -224,15 +209,15 @@ export default class Mapping extends React.Component {
                }}
                >
                <MapView.Callout onPress={this.handleGetGoogleMapDirections}>
-                            <Text>Customer is here. Click to Get Direction details</Text>
+                            <Text>Customer is here. Click to Get Direction details (Optional)</Text>
                         </MapView.Callout>
               </MapView.Marker>
-             
+ 
               {
                 this.state.customer_lat != 0 ? 
                 (
    <MapViewDirections
-             strokeWidth={5}
+              strokeWidth={5}
               strokeColor="#6c5ce7"
        origin={{
          latitude: parseFloat(this.state.latitude),
@@ -244,30 +229,31 @@ export default class Mapping extends React.Component {
        }}
        apikey={Config.GOOGLE_MAPS_API_KEY}
        onReady={(result) => {
-        this.setState({ directionsResult: result})
+         this.setState({ directionsResult: result})
          this.mapView.fitToCoordinates(result.coordinates, {
-           edgePadding: {
-             right: (width / 20),
-             bottom: (height / 20),
-             left: (width / 20),
-             top: (height / 20),
-           }
-         });
+          edgePadding: {
+            right: (width / 20),
+            bottom: (height / 20),
+            left: (width / 20),
+            top: (height / 20),
+          }
+        });
        }}  
      />
                 ): null
               }
      </MapView>
+     
                 ) : null
               }
-              <View style={styles.button}>
+               <View style={styles.button}>
              <Button light>
                <Text style={{fontFamily: 'NunitoSans-Regular'}}>
-               Distance: {this.state.directionsResult.distance}
+               Distance: {parseFloat(this.state.directionsResult.distance).toFixed(2)}
                </Text>
                <View style={{marginLeft:15}}></View>
                <Text style={{fontFamily: 'NunitoSans-Regular'}}>
-               Duration: {this.state.directionsResult.duration}
+               Duration: {parseFloat(this.state.directionsResult.duration).toFixed(2)}
                </Text>
              </Button>
            </View>
@@ -278,37 +264,22 @@ export default class Mapping extends React.Component {
         </Container>
     )
   }
-}
+} 
 
 const styles = StyleSheet.create({
-  // map: {
-  //   position: 'absolute',
-  //   top: 0,
-  //   bottom: 0,
-  //   left: 0,
-  //   right: 0
-  // }
-  //   container: {
-  //     flex: 1,
-  //   },
-  // mapcontainer: {
-  //     flex: 1,
-  //     width: width,
-  //     height: height,
-  //   },
   container: {
     flex: 1,
   },
-  mapcontainer: {
+mapcontainer: {
     width: width,
     height: height,
     zIndex: -1
   },
   button: {
-    flex: 10,
+    flex: 3,
     position: 'absolute',
-    top: 550,
-    marginLeft: 100,
+    top: 350,
+    marginLeft: 100, 
     marginTop: 100,
     zIndex: 10,
   }

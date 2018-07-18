@@ -181,6 +181,7 @@ export default class Schedules extends React.Component {
   }
 _refresh() {
   this.loadData()
+  
 }
 
 _handleComplete = (schedule_id, provider_id) => () => {

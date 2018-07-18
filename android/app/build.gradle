@@ -89,12 +89,12 @@ apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
  * Upload all the APKs to the Play Store and people will download
  * the correct one based on the CPU architecture of their device.
  */
-def enableSeparateBuildPerCPUArchitecture = true
+def enableSeparateBuildPerCPUArchitecture = false
 
 /**
  * Run Proguard to shrink the Java bytecode in release builds.
  */
-def enableProguardInReleaseBuilds = true
+def enableProguardInReleaseBuilds = false
 
 android {
     compileSdkVersion 27
@@ -106,6 +106,7 @@ android {
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
+        multiDexEnabled = true
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }
@@ -152,6 +153,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-restart')
     compile project(':bugsnag-react-native')
     compile project(':react-native-onesignal')
     compile project(':react-native-splash-screen')
