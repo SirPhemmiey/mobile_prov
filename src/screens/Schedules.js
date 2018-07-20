@@ -303,7 +303,7 @@ _handleComplete = (schedule_id, provider_id) => () => {
       }
       <View style={{marginBottom: 10}}></View>
         {
-      section['Schedule'].prov_mark_completed == 'no' ? 
+      section['Schedule'].prov_mark_completed == 'no' ||section['Schedule'].prov_mark_completed == '' ? 
       <Button danger onPress={this._handleComplete(section['Schedule'].id)}  small style={styles.confirmButton}>
         <Text style={styles.confirmButtonText}>Mark as Complete</Text>
       </Button> :

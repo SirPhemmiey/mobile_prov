@@ -138,7 +138,7 @@ export default class EditProfile extends React.Component {
       })
   }
   _saveData() {
-    this.setState({ showLoading: true })
+    this.setState({ showLoading: true }) 
     let { address, profession, intro } = this.state; 
     if (address != '' && profession != '' && intro != '') {
       AsyncStorage.getItem('jwt').then(token => {
