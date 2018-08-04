@@ -55,7 +55,7 @@ export default class Schedules extends React.Component {
       starCount: 3,
       comments: '',
       schedule_id: '',
-      provider_id: ''
+      provider_id: '',
     }
     this._refresh = this._refresh.bind(this);
     this.loadData = this.loadData.bind(this);
@@ -206,9 +206,10 @@ _handleComplete = (schedule_id, provider_id) => () => {
             showLoader: false,
             showDialog: true,
             showLoading: false,
-            dialogMessage: "Provider has been confirmed successfully",
+            dialogMessage: "Schedule has been confirmed successfully",
           })
-          this.loadData()
+          this._refresh()
+          
           //trigger the modal
           this.setModalVisible(true, schedule_id, provider_id);
         } else {
@@ -238,7 +239,7 @@ _handleComplete = (schedule_id, provider_id) => () => {
   render () {
     const { navigate,goBack } = this.props.navigation
     return (
-      <Container>
+      <Container key={this.state.value}>
          
         <Header style={{ backgroundColor: '#6c5ce7' }}>
          <Left>
@@ -260,7 +261,7 @@ _handleComplete = (schedule_id, provider_id) => () => {
           backgroundColor='#6c5ce7'
           networkActivityIndicatorVisible
         />
-        <PTRView 
+        <PTRView
         onRefresh={this._refresh}
         colors='#6c5ce7'
         >
@@ -466,7 +467,7 @@ const styles = StyleSheet.create({
     //marginTop: 10,
     //backgroundColor: '#6c5ce7',
     justifyContent: 'center',
-    marginLeft: 60,
+    marginLeft: 110,
     padding: 2
   }
 })

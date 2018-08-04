@@ -13,6 +13,7 @@
     "react": "16.3.1",
     "react-native": "0.55.4",
     "react-native-chooser": "^1.7.0",
+    "react-native-code-push": "^5.4.1",
     "react-native-config": "^0.11.5",
     "react-native-device-info": "^0.21.5",
     "react-native-elements": "^0.19.1",
