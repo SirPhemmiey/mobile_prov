@@ -14,6 +14,8 @@ import Schedules from './src/screens/Schedules';
 import Mapping from './src/screens/Mapping';
 import EditProfile from './src/screens/EditProfile'
 import { Client } from 'bugsnag-react-native';
+import codePush from 'react-native-code-push';
+let codePushOptions = { checkFrequency: codePush.CheckFrequency.ON_APP_RESUME };
 const bugsnag = new Client();
 
 
@@ -140,3 +142,5 @@ export default class App extends React.Component {
     return <Application />
   }
 }
+// App = codePush(App);
+App = codePush(codePushOptions)(App);
