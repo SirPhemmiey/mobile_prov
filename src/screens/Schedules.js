@@ -299,7 +299,7 @@ _handleComplete = (schedule_id, provider_id) => () => {
           <Text style={styles.confirmButtonText}>Schedule Confirmed</Text>
         </Button> : 
         <Button disabled danger small style={styles.confirmButton}>
-        <Text style={styles.confirmButtonText}>Schedule not Completed</Text>
+        <Text style={styles.confirmButtonText}>Schedule not Confirmed</Text>
       </Button>
       }
       <View style={{marginBottom: 10}}></View>

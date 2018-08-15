@@ -136,7 +136,7 @@ export default class Login extends React.Component {
           <Form>
             <Item stackedLabel>
               <Label style={{ fontFamily: 'NunitoSans-Regular' }}>
-                Email
+                Phone number
               </Label>
               <Input
                 style={styles.input}
