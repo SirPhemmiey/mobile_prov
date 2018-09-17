@@ -11,7 +11,6 @@ import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.airbnb.android.react.maps.MapsPackage;
 import com.imagepicker.ImagePickerPackage;
-import com.arttitude360.reactnative.rngoogleplaces.RNGooglePlacesPackage;
 import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
@@ -48,7 +47,6 @@ public class MainApplication extends Application implements ReactApplication {
             new VectorIconsPackage(),
             new MapsPackage(),
             new ImagePickerPackage(),
-            new RNGooglePlacesPackage(),
             new ReactNativeConfigPackage()
       );
     }

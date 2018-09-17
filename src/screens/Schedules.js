@@ -6,9 +6,9 @@ import {
   AsyncStorage,
   ActivityIndicator,
   StatusBar,
-  Image, 
+  Image,
   TouchableOpacity,
-  Modal, 
+  Modal,
   TouchableHighlight,
   TextInput
 } from 'react-native'
@@ -74,7 +74,7 @@ export default class Schedules extends React.Component {
       starCount: rating
     });
   }
-  
+
   _handleAddReview() {
     this.setState({ showLoading: true })
     if (this.state.comments != '') {
@@ -127,7 +127,7 @@ export default class Schedules extends React.Component {
       })
     }
   }
-   
+
   loadData() {
     AsyncStorage.getItem('jwt').then(token => {
       fetch(Config.API_URL+'/ProvApi/all_schedules', {
@@ -181,7 +181,7 @@ export default class Schedules extends React.Component {
   }
 _refresh() {
   this.loadData()
-  
+
 }
 
 _handleComplete = (schedule_id, provider_id) => () => {
@@ -209,7 +209,7 @@ _handleComplete = (schedule_id, provider_id) => () => {
             dialogMessage: "Schedule has been confirmed successfully",
           })
           this._refresh()
-          
+
           //trigger the modal
           this.setModalVisible(true, schedule_id, provider_id);
         } else {
@@ -240,8 +240,8 @@ _handleComplete = (schedule_id, provider_id) => () => {
     const { navigate,goBack } = this.props.navigation
     return (
       <Container key={this.state.value}>
-         
-        <Header style={{ backgroundColor: '#6c5ce7' }}>
+
+        <Header style={{ backgroundColor: '#3897f1' }}>
          <Left>
          <Button transparent>
               <Icon
@@ -258,21 +258,21 @@ _handleComplete = (schedule_id, provider_id) => () => {
         </Header>
          <StatusBar
           barStyle='light-content'
-          backgroundColor='#6c5ce7'
+          backgroundColor='#3897f1'
           networkActivityIndicatorVisible
         />
         <PTRView
         onRefresh={this._refresh}
-        colors='#6c5ce7'
+        colors='#3897f1'
         >
 
         {
-          !this.state.showLoader ? 
+          !this.state.showLoader ?
           (
-            this.state.schedules != '' ? 
+            this.state.schedules != '' ?
          <View>
             <Text style={styles.title}>List of your schedules</Text>
-         
+
       {
         this.state.schedules.map((section, index) => {
           return (
@@ -294,42 +294,42 @@ _handleComplete = (schedule_id, provider_id) => () => {
         <Text style={styles.contentText}>{section['Schedule'].status}</Text>
       </View>
       {
-        section['Schedule'].provider_confirm == 'yes' ? 
+        section['Schedule'].provider_confirm == 'yes' ?
         <Button disabled success small style={styles.confirmButton}>
           <Text style={styles.confirmButtonText}>Schedule Confirmed</Text>
-        </Button> : 
+        </Button> :
         <Button disabled danger small style={styles.confirmButton}>
         <Text style={styles.confirmButtonText}>Schedule not Confirmed</Text>
       </Button>
       }
       <View style={{marginBottom: 10}}></View>
         {
-      section['Schedule'].prov_mark_completed == 'no' ||section['Schedule'].prov_mark_completed == '' ? 
+      section['Schedule'].prov_mark_completed == 'no' ||section['Schedule'].prov_mark_completed == '' ?
       <Button danger onPress={this._handleComplete(section['Schedule'].id)}  small style={styles.confirmButton}>
         <Text style={styles.confirmButtonText}>Mark as Complete</Text>
       </Button> :
       null
     }
-    
+
 
       </Card>
           );
-          
+
         })
       }
          </View>:
-      <View style={{ 
-      top: 0, left: 0, 
-      right: 0, bottom: 0, 
-      justifyContent: 'center', 
+      <View style={{
+      top: 0, left: 0,
+      right: 0, bottom: 0,
+      justifyContent: 'center',
       alignItems: 'center'}}>
         <Text style={styles.title}>No Schedule yet</Text>
       </View>
           ): null
         }
-        
+
           <ActivityIndicator
-            color='#6c5ce7'
+            color='#3897f1'
             size='small'
             animating={this.state.showLoader}
           />
@@ -381,13 +381,13 @@ _handleComplete = (schedule_id, provider_id) => () => {
                 justifyContent: 'center',
                 alignSelf: 'center',
                 marginTop: 20,
-                backgroundColor: '#6c5ce7'
+                backgroundColor: '#3897f1'
               }}
             >
              <Text style={{fontFamily: 'NunitoSans-Regular', padding: 4, color: '#fff'}}>CLOSE</Text>
             </Button>
           </Dialog>
-          
+
         </PTRView>
       </Container>
     )
@@ -395,15 +395,15 @@ _handleComplete = (schedule_id, provider_id) => () => {
 }
 
 const styles = StyleSheet.create({
- 
+
   headerContainer: {
-    marginLeft:40, 
-    marginTop: 10, 
-    width: '80%', 
+    marginLeft:40,
+    marginTop: 10,
+    width: '80%',
     borderRadius: 5
   },
   headerText: {
-    fontFamily: 'NunitoSans-Bold', 
+    fontFamily: 'NunitoSans-Bold',
     fontSize: 17,
     textAlign: 'center'
   },
@@ -413,24 +413,24 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   contentHeader: {
-    fontFamily: 'NunitoSans-Bold', 
-    fontSize: 15, 
+    fontFamily: 'NunitoSans-Bold',
+    fontSize: 15,
   },
   contentText: {
-    fontFamily: 'NunitoSans-Regular', 
+    fontFamily: 'NunitoSans-Regular',
     fontSize: 15
   },
   title: {
     fontFamily: 'NunitoSans-Regular',
     fontSize: 18,
-    color: '#6c5ce7',
+    color: '#3897f1',
     textAlign: 'center',
     marginTop: 10
   },
   button: {
     width: '45%',
     marginTop: 10,
-    //backgroundColor: '#6c5ce7',
+    //backgroundColor: '#3897f1',
     justifyContent: 'center',
     marginLeft: 100,
     padding: 2
@@ -438,7 +438,7 @@ const styles = StyleSheet.create({
   buttonYet: {
     width: '55%',
     marginTop: 10,
-    //backgroundColor: '#6c5ce7',
+    //backgroundColor: '#3897f1',
     justifyContent: 'center',
     marginLeft: 85,
     padding: 2
@@ -451,7 +451,7 @@ const styles = StyleSheet.create({
   hire: {
     width: '50%',
     marginTop: 10,
-    backgroundColor: '#6c5ce7',
+    backgroundColor: '#3897f1',
     justifyContent: 'center',
     marginLeft: 80,
     padding: 4
@@ -465,7 +465,7 @@ const styles = StyleSheet.create({
   confirmButton: {
     width: '65%',
     //marginTop: 10,
-    //backgroundColor: '#6c5ce7',
+    //backgroundColor: '#3897f1',
     justifyContent: 'center',
     marginLeft: 110,
     padding: 2

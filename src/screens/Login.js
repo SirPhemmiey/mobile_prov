@@ -1,17 +1,10 @@
 import React from 'react'
-import { StyleSheet, Image, Alert, StatusBar, AsyncStorage } from 'react-native'
+import { StyleSheet, Image, StatusBar, AsyncStorage, ImageBackground, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native'
 import {
-  Container,
-  Header,
   Content,
-  Label,
-  Text,
-  Form,
-  Item,
-  Input,
-  Button,
-  View
 } from 'native-base'
+import { Text, View } from 'react-native-animatable';
+import { Button } from 'react-native-elements';
 import Config from 'react-native-config'
 import { NavigationActions } from 'react-navigation'
 import { ProgressDialog, Dialog } from 'react-native-simple-dialogs'
@@ -29,15 +22,12 @@ export default class Login extends React.Component {
       showLoading: false,
       showDialog: false,
       dialogTitle: '',
-      dialogMessage: ''
+      dialogMessage: '',
     }
     this._handleLogin = this._handleLogin.bind(this)
     //SplashScreen.show()
-   
+
   }
-  _focusNextField(nextField) {
-    this.refs[nextField]._root.focus()
-    }
 
   navigateToLogin = () => {
     const toHome = NavigationActions.reset({
@@ -93,90 +83,109 @@ export default class Login extends React.Component {
       })
     }
   }
-  componentWillMount() {
+//   componentWillMount() {
+//     SplashScreen.hide();
+//    AsyncStorage.getItem('jwt').then(token => {
+//      if (token != null) {
+//          //SplashScreen.hide();
+//          this.props.navigation.replace('tabStack')
+//      }
+//      else {
+//         SplashScreen.hide();
+//      }
+//  }).done();
+//  AsyncStorage.getItem('seeWelcome').then(token => {
+//    if (token != 'yes') {
+//        SplashScreen.hide();
+//        this.props.navigation.replace('welcomeStack')
+//    }
+//    else {
+//       SplashScreen.hide();
+//    }
+// }).done();
+//  }
+
+async componentWillMount() {
+  //SplashScreen.show();
+  const jwt = await AsyncStorage.getItem('jwt');
+  if (jwt !== null) {
     SplashScreen.hide();
-   AsyncStorage.getItem('jwt').then(token => {
-     if (token != null) {
-         //SplashScreen.hide();
-         this.props.navigation.replace('tabStack')
-     }
-     else {
-        SplashScreen.hide();
-     }
- }).done();
- AsyncStorage.getItem('seeWelcome').then(token => {
-   if (token != 'yes') {
-       SplashScreen.hide();
-       this.props.navigation.replace('welcomeStack')
-   }
-   else {
+    this.props.navigation.replace('tabStack');
+  }
+  else {
+    SplashScreen.hide();
+    const seeWelcome = await AsyncStorage.getItem('seeWelcome');
+    if (seeWelcome !== 'yes') {
       SplashScreen.hide();
-   }
-}).done();
- }
+      this.props.navigation.replace('welcomeStack')
+    }
+    else {
+      SplashScreen.hide();
+      this.props.navigation.navigate('loginStack');
+    }
+  }
+}
 
   render () {
     const { navigate } = this.props.navigation
     return (
-      <Container>
-        <Content style={{ padding: 10, flex: 1 }}>
+      <ImageBackground blurRadius={1} style={styles.bg} source={{uri: 'http://www.stylefit.ng/img/b1.jpg'}}>
+      <Content style={styles.containerView}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View animation={'slideInUp'} delay={600} duration={400} style={styles.loginScreenContainer}>
           <StatusBar
             barStyle='light-content'
-            backgroundColor='#6c5ce7'
+            backgroundColor='#3897f1'
             networkActivityIndicatorVisible
           />
-           <View style={styles.logoContainer}>
-            <Image
-              style={styles.logo}
-              resizeMode='contain'
-              source={require('../assets/images/logo.png')}
-            />
-            <Text style={styles.title}>Provider Login</Text>
-          </View>
-          <Form>
-            <Item stackedLabel>
-              <Label style={{ fontFamily: 'NunitoSans-Regular' }}>
-                Phone number
-              </Label>
-              <Input
-                style={styles.input}
+            <View style={styles.loginFormView}>
+              <View style={styles.logoContainer}>
+                <Image animation={'zoomIn'} delay={700} duration={400}
+                  style={styles.logo}
+                  resizeMode='contain'
+                  source={require('../assets/images/logo_former.png')}
+                />
+              </View>
+                <TextInput
+                ref="phone"
                 returnKeyType='next'
-                onSubmitEditing={() => this._focusNextField('password')}
+                style={styles.loginFormTextInput}
                 onChangeText={username => this.setState({ username })}
-                keyboardType='email-address'
+                keyboardType='numeric'
                 autoCapitalize='none'
-                autoCorrect={false}
+                placeholder="Phone Number"
+                underlineColorAndroid='transparent'
+                onSubmitEditing={() => this.password.focus()}
+                autoCorrect={false} />
+
+                <TextInput
+                  placeholder="Password"
+                  returnKeyType='go'
+                  ref={(input) => this.password = input}
+                  style={styles.loginFormTextInput}
+                  secureTextEntry
+                  underlineColorAndroid='transparent'
+                  onChangeText={password => this.setState({ password })} />
+
+                <Button
+                  buttonStyle={styles.loginButton}
+                  onPress={this._handleLogin}
+                  title="Login"
+                />
+
+          <View style={styles.separatorContainer} animation={'slideInLeft'} delay={700} duration={400}>
+          <View style={styles.separatorLine} />
+          <Text style={styles.separatorOr}>{'Or'}</Text>
+          <View style={styles.separatorLine} />
+          </View>
+              <View animation={'slideInDown'} delay={800} duration={400}>
+              <Button
+                buttonStyle={styles.loginButton}
+                onPress={() => navigate('Signup')}
+                title="Register"
               />
-            </Item>
-            <Item stackedLabel last>
-              <Label style={{ fontFamily: 'NunitoSans-Regular' }}>
-                Password
-              </Label>
-              <Input
-                style={styles.input}
-                returnKeyType='go'
-                ref="password"
-                secureTextEntry
-                onChangeText={password => this.setState({ password })}
-              />
-            </Item>
-            <Button
-              bordered
-              small
-              onPress={this._handleLogin}
-              style={styles.loginButton}
-            >
-              <Text style={styles.loginText}>Login</Text>
-            </Button>
-            <View style={{ flex: 3 }} />
-            <Button
-              onPress={() => navigate('Signup')}
-              small
-              style={styles.signupButton}
-            >
-              <Text style={styles.loginText}>Signup</Text>
-            </Button>
-          </Form>
+              </View>
+            </View>
           <ProgressDialog
             visible={this.state.showLoading}
             title='Logging in'
@@ -194,59 +203,146 @@ export default class Login extends React.Component {
               </Text>
             </View>
             <Button
-              small
-              light
-              onPress={() => this.setState({ showDialog: false })}
-              style={{
-                justifyContent: 'center',
-                alignSelf: 'center',
-                marginTop: 20,
-                backgroundColor: '#6c5ce7'
-              }}
-            >
-             <Text style={{fontFamily: 'NunitoSans-Regular', padding: 4, color: '#fff'}}>CLOSE</Text>
-            </Button>
+                buttonStyle={styles.dialogButton}
+                onPress={() => this.setState({ showDialog: false })}
+                color="#fff"
+                title="Close"
+                />
           </Dialog>
-        </Content>
-      </Container>
+        </View>
+        </TouchableWithoutFeedback>
+      </Content>
+      </ImageBackground>
     )
   }
 }
 
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1
+//   },
+//   logo: {
+//     width: 250,
+//     height: 80
+//   },
+//   title: {
+//     fontFamily: 'NunitoSans-Regular',
+//     fontSize: 18,
+//     alignSelf: 'center',
+//     color: '#3897f1',
+//     textAlign: 'center',
+//     marginTop: 20
+//   },
+//   logoContainer: {
+//     justifyContent: 'center',
+//     alignContent: 'center',
+//     alignItems: 'center'
+//   },
+//   loginText: {
+//     fontWeight: 'bold',
+//     fontFamily: 'NunitoSans-Regular'
+//   },
+//   loginButton: {
+//     marginTop: 15,
+//     alignSelf: 'center'
+//   },
+//   signupButton: {
+//     marginTop: 15,
+//     alignSelf: 'center'
+//   },
+//   input: {
+//     fontFamily: 'NunitoSans-Regular'
+//   }
+// })
+
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1
+
+  separatorContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginVertical: 20
+  },
+  separatorLine: {
+    flex: 1,
+    borderWidth: StyleSheet.hairlineWidth,
+    height: StyleSheet.hairlineWidth,
+    borderColor: '#9B9FA4'
+  },
+  separatorOr: {
+    color: '#9B9FA4',
+    marginHorizontal: 8
+  },
+  dialogButton: {
+    justifyContent: 'center',
+    alignSelf: 'center',
+    marginTop: 20,
+    backgroundColor: '#3897f1',
+    borderRadius: 5,
+  },
+  bg: {
+    flex: 1,
+    width: null,
+    height: null,
   },
   logo: {
-    width: 250,
-    height: 80
+    // width: 80,
+    // height: 80,
+    alignItems: 'center',
+    alignSelf: 'center'
   },
-  title: {
-    fontFamily: 'NunitoSans-Regular',
-    fontSize: 18,
-    alignSelf: 'center',
-    color: '#6c5ce7',
+  containerView: {
+    flex: 1,
+  },
+  loginScreenContainer: {
+    flex: 1,
+  },
+  logoLoginText: {
+    fontSize: 30,
+    fontWeight: "200",
     textAlign: 'center',
-    marginTop: 20
+    fontFamily: 'NunitoSans-Regular'
   },
   logoContainer: {
-    justifyContent: 'center',
-    alignContent: 'center',
-    alignItems: 'center'
+    marginTop: 150,
+    marginBottom: 30,
   },
-  loginText: {
-    fontWeight: 'bold',
-    fontFamily: 'NunitoSans-Regular'
+  // logoText: {
+  // //  fontSize: 40,
+  // //  fontWeight: "800",
+  //   marginTop: 150,
+  //   marginBottom: 30,
+  //   //textAlign: 'center',
+  // },
+  loginFormView: {
+    flex: 1
+  },
+  loginFormTextInput: {
+    height: 43,
+    fontSize: 14,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: '#eaeaea',
+    backgroundColor: '#fafafa',
+    fontFamily: 'NunitoSans-Regular',
+    paddingLeft: 10,
+    marginLeft: 15,
+    marginRight: 15,
+    marginTop: 5,
+    marginBottom: 5,
+
   },
   loginButton: {
-    marginTop: 15,
-    alignSelf: 'center'
+    backgroundColor: '#3897f1',
+    //backgroundColor: '#3897f1',
+    borderRadius: 5,
+    height: 45,
+    marginTop: 10,
   },
-  signupButton: {
-    marginTop: 15,
-    alignSelf: 'center'
+  fbLoginButton: {
+    height: 45,
+    marginTop: 10,
+    backgroundColor: 'transparent',
   },
-  input: {
-    fontFamily: 'NunitoSans-Regular'
-  }
 })
+

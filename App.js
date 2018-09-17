@@ -73,7 +73,7 @@ const tabStack = TabNavigator(
       style: {
         height: 60,
         //paddingVertical: 5,
-        backgroundColor: '#6c5ce7'
+        backgroundColor: '#3897f1'
       },
       labelStyle: {
         fontSize: 9,
@@ -104,7 +104,7 @@ const welcomeStack = StackNavigator(
   {
     welcome: { screen: Welcome },
     loginStack: { screen: loginStack}
-    
+
   },
   {
     headerMode: 'none'

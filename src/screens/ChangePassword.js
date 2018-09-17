@@ -1,22 +1,18 @@
 import React from 'react'
-import { StyleSheet, Image, Alert, StatusBar, AsyncStorage } from 'react-native'
+import { StyleSheet, TextInput, StatusBar, AsyncStorage } from 'react-native'
 import {
   Container,
   Header,
   Content,
-  Label,
-  Text,
-  Form,
-  Item,
-  Input,
-  Button,
-  View,
+  Button as ButtonNative,
   Left,
   Right,
   Icon,
   Body,
   Title
 } from 'native-base'
+import { View, Text } from 'react-native-animatable'
+import { Button } from 'react-native-elements';
 import Config from 'react-native-config'
 import { ProgressDialog, Dialog } from 'react-native-simple-dialogs'
 
@@ -36,9 +32,6 @@ export default class ChangePassword extends React.Component {
       dialogMessage: ''
     }
   }
-  _focusNextField(nextField) {
-    this.refs[nextField]._root.focus()
-    }
 
   _handleChangePassword = () => {
       let {oldPassword, newPassword, newPassword2} = this.state;
@@ -84,7 +77,7 @@ export default class ChangePassword extends React.Component {
                 dialogMessage: "New passwords are different"
               })
           }
-          
+
         })
         .catch(err => {
           this.setState({
@@ -107,15 +100,12 @@ export default class ChangePassword extends React.Component {
     const { navigate, goBack } = this.props.navigation
     return (
       <Container>
-        <Header style={{ backgroundColor: '#6c5ce7' }}>
+        <Header style={{ backgroundColor: '#3897f1' }}>
          <Left>
-         <Button transparent>
-              <Icon
-                onPress={() => goBack()}
-                ios='ios-arrow-back'
-                android='md-arrow-back'
-              />
-            </Button>
+         <ButtonNative transparent iconLeft onPress={() => goBack()}>
+            <Icon ios='ios-arrow-back'
+                android='md-arrow-back' />
+          </ButtonNative>
          </Left>
          <Body style={{flex:2}}>
              <Title style={{fontFamily: 'NunitoSans-Regular'}}>Change Password</Title>
@@ -124,57 +114,46 @@ export default class ChangePassword extends React.Component {
         </Header>
          <StatusBar
           barStyle='light-content'
-          backgroundColor='#6c5ce7'
+          backgroundColor='#3897f1'
           networkActivityIndicatorVisible
         />
         <Content style={{ padding: 10, flex: 1 }}>
-          <Form>
-            <Item stackedLabel>
-              <Label style={{ fontFamily: 'NunitoSans-Regular' }}>
-                Old Password
-              </Label>
-              <Input
-                style={styles.input}
-                returnKeyType='next'
-                onSubmitEditing={() => this._focusNextField('newPassword')}
-                onChangeText={oldPassword => this.setState({ oldPassword })}
-                secureTextEntry
-              />
-            </Item>
-            <Item stackedLabel>
-              <Label style={{ fontFamily: 'NunitoSans-Regular' }}>
-                New Password
-              </Label>
-              <Input
-                style={styles.input}
-                returnKeyType='next'
-                ref="newPassword"
-                onSubmitEditing={() => this._focusNextField('confirmPassword')}
-                secureTextEntry
-                onChangeText={newPassword => this.setState({ newPassword })}
-              />
-            </Item>
-            <Item stackedLabel last>
-              <Label style={{ fontFamily: 'NunitoSans-Regular' }}>
-                Confirm Password
-              </Label>
-              <Input
-                style={styles.input}
-                returnKeyType='go'
-                ref="confirmPassword"
-                secureTextEntry
-                onChangeText={newPassword2 => this.setState({ newPassword2 })}
-              />
-            </Item>
+
+        <View animation={'fadeInLeft'} delay={600} duration={400}>
+        <TextInput
+                  placeholder="Old Password"
+                  returnKeyType='next'
+                  style={styles.loginFormTextInput}
+                  secureTextEntry
+                  onSubmitEditing={() => this.password.focus()}
+                  underlineColorAndroid='transparent'
+                  onChangeText={oldPassword => this.setState({ oldPassword })}
+                  />
+        <TextInput
+                  placeholder="New Password"
+                  returnKeyType='next'
+                  ref={(input) => this.password = input}
+                  onSubmitEditing={() => this.confirm.focus()}
+                  style={styles.loginFormTextInput}
+                  secureTextEntry
+                  underlineColorAndroid='transparent'
+                  onChangeText={newPassword => this.setState({ newPassword })} />
+         <TextInput
+                  placeholder="Confirm Password"
+                  returnKeyType='go'
+                  ref={(input) => this.confirm = input}
+                  style={styles.loginFormTextInput}
+                  secureTextEntry
+                  underlineColorAndroid='transparent'
+                  onChangeText={newPassword2 => this.setState({ newPassword2 })} />
+                <View animation={'fadeInLeft'} delay={700} duration={400}>
             <Button
-              bordered
-              small
-              onPress={this._handleChangePassword}
-              style={styles.loginButton}
-            >
-              <Text style={styles.loginText}>Change</Text>
-            </Button>
-          </Form>
+                buttonStyle={styles.changeButton}
+                onPress={this._handleChangePassword}
+                title="Change"
+                />
+            </View>
+        </View>
           <ProgressDialog
             visible={this.state.showLoading}
             title='Changing'
@@ -213,6 +192,27 @@ export default class ChangePassword extends React.Component {
 }
 
 const styles = StyleSheet.create({
+  loginFormTextInput: {
+    height: 43,
+    fontSize: 14,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: '#eaeaea',
+    backgroundColor: '#fafafa',
+    fontFamily: 'NunitoSans-Regular',
+    paddingLeft: 10,
+    marginLeft: 15,
+    marginRight: 15,
+    marginTop: 20,
+    marginBottom: 5,
+  },
+  changeButton: {
+    backgroundColor: '#3897f1',
+    //backgroundColor: '#3897f1',
+    borderRadius: 5,
+    height: 45,
+    marginTop: 20,
+  },
   container: {
     flex: 1
   },

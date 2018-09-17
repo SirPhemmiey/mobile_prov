@@ -1,37 +1,31 @@
 import React from 'react'
 import {
   StyleSheet,
-  Text,
-  View,
   AsyncStorage,
   ActivityIndicator,
   StatusBar,
-  Image,
-  TouchableOpacity,
-  ImageBackground,
   Dimensions,
   Picker,
   TextInput
 } from 'react-native'
 import Config from 'react-native-config'
-import { Card, Avatar } from 'react-native-elements'
+import { View, Text } from 'react-native-animatable'
+import { Button } from 'react-native-elements';
 import {
   Title,
   Container,
   Content,
   Header,
   Left,
-  Button,
+  Button as ButtonNative,
   Icon,
   Body,
-  Input,
   Right,
-  Textarea,
-  Form,
   Label,
+  Textarea
 } from 'native-base'
-import RNGooglePlaces from 'react-native-google-places'
 import { ProgressDialog, Dialog } from 'react-native-simple-dialogs'
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
 const { width, height } = Dimensions.get('window')
 export default class EditProfile extends React.Component {
@@ -57,12 +51,10 @@ export default class EditProfile extends React.Component {
     }
     this.loadData = this.loadData.bind(this);
     this._getServices = this._getServices.bind(this);
-    this._openPlacePicker = this._openPlacePicker.bind(this);
     this._saveData = this._saveData.bind(this)
+    this._handleLocation = this._handleLocation.bind(this)
   }
-  _focusNextField(nextField) {
-    this.refs[nextField]._root.focus()
-    }
+
   loadData() {
     const { navigation } = this.props
     AsyncStorage.getItem('jwt').then(token => {
@@ -121,25 +113,17 @@ export default class EditProfile extends React.Component {
       selectedService: value
     })
   }
-  _openPlacePicker(){
-    RNGooglePlaces.openPlacePickerModal()
-      .then(place => {
-        this.setState({
-          address: place.name + ', ' + place.address,
-          latitude: place.latitude,
-          longitude: place.longitude
-        })
-      })
-      .catch(error => {
-        this.setState({
-          showDialog: true,
-          dialogMessage: error.message
-        })
-      })
+  _handleLocation(data, details) {
+    this.setState({
+      address: data.description,
+      latitude: details.geometry['location'].lat,
+      longitude: details.geometry['location'].lng
+    })
   }
+
   _saveData() {
-    this.setState({ showLoading: true }) 
-    let { address, profession, intro } = this.state; 
+    this.setState({ showLoading: true })
+    let { address, profession, intro } = this.state;
     if (address != '' && profession != '' && intro != '') {
       AsyncStorage.getItem('jwt').then(token => {
         fetch(Config.API_URL+'/ProvApi/update_profile', {
@@ -214,37 +198,93 @@ export default class EditProfile extends React.Component {
     const { navigation } = this.props
     return (
       <Container>
-       <Header style={{ backgroundColor: '#6c5ce7' }}>
+       <Header style={{ backgroundColor: '#3897f1' }}>
           <Left>
-            <Button transparent iconLeft onPress={() => navigation.goBack()}>
-              <Icon ios='ios-arrow-back'
+            <ButtonNative transparent iconLeft onPress={() => navigation.goBack()}>
+            <Icon ios='ios-arrow-back'
                 android='md-arrow-back' />
-            </Button>
+          </ButtonNative>
           </Left>
           <Body style={{flex: 1,}}>
-            <Title style={styles.heading}>Edit Profile</Title>
+            <Title style={styles.heading}>Update Profile</Title>
           </Body>
           <Right />
         </Header>
         <StatusBar
           barStyle='light-content'
-          backgroundColor='#6c5ce7'
+          backgroundColor='#3897f1'
           networkActivityIndicatorVisible
         />
         <Content>
-          {!this.state.showLoader
-            ? <View>
 
-              <Form>
+          {!this.state.showLoader
+            ? <View animation={'fadeInLeft'} delay={500} duration={400}>
+
                 <View>
 
-              <View style={{
+       <GooglePlacesAutocomplete
+      placeholder='Select location'
+      minLength={1}
+      listViewDisplayed={ false }
+      enablePoweredByContainer={false}
+      autoFocus={false}
+      returnKeyType={'search'}
+      fetchDetails={true}
+      renderDescription={row => row.description} // custom description render
+      onPress={(data, details = null) => {
+        // this._handleLocation(data,details)
+        this.setState({
+          address: data.description,
+          latitude: details.geometry['location'].lat,
+          longitude: details.geometry['location'].lng
+        })
+      }}
+      query={{
+        key: Config.GOOGLE_MAPS_API_KEY,
+        language: 'en',
+        types:['address', 'establishment'],
+      }}
+
+      styles={{
+        textInputContainer: {
+          height: 43,
+          borderRadius: 5,
+          borderWidth: 1,
+          borderColor: '#eaeaea',
+          backgroundColor: '#fafafa',
+          paddingLeft: 10,
+          marginLeft: 15,
+          marginRight: 15,
+          marginTop: 20,
+          marginBottom: 5,
+        },
+        description: {
+          // fontWeight: 'bold',
+          fontSize: 14,
+          fontFamily: 'NunitoSans-Regular',
+        },
+        predefinedPlacesDescription: {
+          color: '#1faadb'
+        }
+      }}
+      nearbyPlacesAPI='GooglePlacesSearch' // Which API to use: GoogleReverseGeocoding or GooglePlacesSearch
+      GooglePlacesSearchQuery={{
+        rankby: 'distance',
+        types: 'street_address'
+      }}
+      filterReverseGeocodingByTypes={['locality', 'administrative_area_level_3']}
+      debounce={200}
+    />
+              <View animation={'fadeInLeft'} delay={700} duration={400} style={{
                            flexDirection: 'row',
                            justifyContent: 'space-between'
                          }}>
               <Text style={styles.label}>Service</Text>
               <Picker
-                itemStyle={{ fontFamily: 'NunitoSans-Regular' }}
+                itemStyle={{ fontFamily: 'NunitoSans-Regular', borderRadius: 5,
+                borderWidth: 1,
+                borderColor: '#eaeaea',
+                backgroundColor: '#fafafa', }}
                 selectedValue={this.state.selectedService}
                 style={{
                   width: 200,
@@ -266,65 +306,58 @@ export default class EditProfile extends React.Component {
               </Picker>
                   </View>
 
-                  <View>
-                    
+                  <View animation={'fadeInLeft'} delay={800} duration={400}>
+
                  <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
                  <Label style={styles.label}>Profession</Label>
-                 <Input
+                 {/* <Input
                 style={{
                   width: 100,
                   marginTop: 30
                 }}
-                underlineColorAndroid="#6c5ce7"
+                underlineColorAndroid="#3897f1"
                 returnKeyType='next'
                 onChangeText={profession => this.setState({ profession })}
                 autoCapitalize='none'
-              />
+              /> */}
+                <TextInput
+                  placeholder="Profession"
+                  returnKeyType='next'
+                  onSubmitEditing={() => this.location.focus()}
+                  style={styles.loginFormTextInput}
+                  keyboardType="default"
+                  underlineColorAndroid='transparent'
+                  autoCapitalize='none'
+                  autoCorrect={false}
+                  onChangeText={profession => this.setState({ profession })}/>
                  </View>
 
-                 <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                 <Label style={styles.label}>Location</Label>
-                 <View style={{flexDirection: 'column'}}>
-                 <Input
-                style={{
-                  width: 300,
-                  marginRight: 40,
-                  marginTop: 30
-                }}
-                value={this.state.address}
-                underlineColorAndroid="#6c5ce7"
-              />
-                 
-              <TouchableOpacity onPress={this._openPlacePicker}>
-                <Text
-                  style={{
-                    fontFamily: 'NunitoSans-Regular',
-                    fontSize: 16,
-                    color: '#6c5ce7',
-                    marginLeft:50,
-                    marginBottom: 25
-                  }}
-                >
-                  Pick a Place
-                </Text>
-              </TouchableOpacity>
-                 </View>
-                 </View>
-                 
                  <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
                  <Label style={{marginLeft: 20, color: '#0000'}}>Bio</Label>
                  <View style={{marginBottom: 30}}></View>
                <Textarea onChangeText={(intro) => this.setState({intro})} ref={input => (this.bioInput = input)} rowSpan={5} style={{fontFamily:'NunitoSans-Regular', left:0, right:0,  marginRight:20, flex:1}} bordered placeholder="Write a short introduction about yourself and what you do..." />
+
+                   {/* <TextInput
+                  placeholder="Full Name"
+                  returnKeyType='next'
+                  multiline={true}
+                  ref={input => this.bio = input}
+                  style={styles.loginFormTextInput}
+                  keyboardType="default"
+                  underlineColorAndroid='transparent'
+                  autoCapitalize='none'
+                  autoCorrect={false}
+                  onChangeText={(intro) => this.setState({intro})}/> */}
               </View>
                   </View>
-                
+
                 <View>
-                  
+
                 </View>
 
               </View>
-              </Form>
-              <Button disabled={this.state.disableButton} onPress={this._saveData} small style={styles.hire}>
+              {/* </Form> */}
+              {/* <Button disabled={this.state.disableButton} onPress={this._saveData} small style={styles.hire}>
                 <Text
                   style={{
                     color: '#fff',
@@ -334,11 +367,15 @@ export default class EditProfile extends React.Component {
                   >
                     Update
                   </Text>
-              </Button>
+              </Button> */}
+              <Button disabled={this.state.disableButton} onPress={this._saveData}
+                  buttonStyle={styles.loginButton}
+                  title="Update"
+                />
             </View>
             : null}
           <ActivityIndicator
-            color='#6c5ce7'
+            color='#3897f1'
             size='small'
             animating={this.state.showLoader}
           />
@@ -359,22 +396,15 @@ export default class EditProfile extends React.Component {
               </Text>
             </View>
             <Button
-              small
-              light
-              onPress={() => this.setState({ showDialog: false })}
-              style={{
-                justifyContent: 'center',
-                alignSelf: 'center',
-                marginTop: 20,
-                padding: 4,
-                backgroundColor: '#6c5ce7'
-              }}
-            >
-              <Text style={{ color: '#fff', fontFamily: 'NunitoSans-Regular', padding: 4 }}>
-                CLOSE
-              </Text>
-            </Button>
+                buttonStyle={styles.dialogButton}
+                onPress={() => this.setState({ showDialog: false })}
+                color="#fff"
+                title="Close"
+                />
           </Dialog>
+
+
+
         </Content>
       </Container>
     )
@@ -399,12 +429,40 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     padding: 3
   },
- 
+  loginButton: {
+    backgroundColor: '#3897f1',
+    borderRadius: 5,
+    height: 45,
+    marginTop: 10,
+  },
   hire: {
     width: '30%',
     marginTop: 10,
-    backgroundColor: '#6c5ce7',
+    backgroundColor: '#3897f1',
     justifyContent: 'center',
     marginLeft: 120
-  }
+  },
+  loginFormTextInput: {
+    height: 43,
+    width: 200,
+    fontSize: 14,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: '#eaeaea',
+    backgroundColor: '#fafafa',
+    fontFamily: 'NunitoSans-Regular',
+    paddingLeft: 10,
+    // paddingRight: 40,
+    marginLeft: 15,
+    marginRight: 95,
+    marginTop: 40,
+    marginBottom: 5,
+  },
+  dialogButton: {
+    justifyContent: 'center',
+    alignSelf: 'center',
+    marginTop: 20,
+    backgroundColor: '#3897f1',
+    borderRadius: 5,
+  },
 })

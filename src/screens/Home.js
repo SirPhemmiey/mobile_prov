@@ -34,7 +34,6 @@ import {
   Title,
 } from 'native-base';
 import PTRView from 'react-native-pull-to-refresh';
-import SplashScreen from 'react-native-splash-screen'
 import RNRestart from 'react-native-restart';
 
 export default class Home extends React.Component {
@@ -101,7 +100,7 @@ export default class Home extends React.Component {
         .catch(err => {
           this.setState({
             showDialog: true,
-            dialogMessage: err.message + "lol here",
+            dialogMessage: err.message,
             showLoader: false,
             showLoading: false,
           })
@@ -142,7 +141,8 @@ export default class Home extends React.Component {
               this.setState({showDialog: false})
               RNRestart.Restart();
             }, 2000);
-            //this._refresh();
+            // this.loadData();
+            // this._refresh();
           } else if (res == 'error') {
             this.setState({
               showDialog: true,
@@ -182,6 +182,9 @@ export default class Home extends React.Component {
   //     dialogVisibleAccept: true,
   //   });
   // };
+  // componentDidUpdate() {
+  //   this.loadData();
+  // }
   componentWillMount() {
     OneSignal.setLogLevel(7, 0);
     OneSignal.init(Config.ONESIGNAL_API_KEY, {
@@ -213,7 +216,7 @@ export default class Home extends React.Component {
   render() {
     return (
       <Container>
-        <Header style={{ backgroundColor: '#6c5ce7' }}>
+        <Header style={{ backgroundColor: '#3897f1' }}>
          <Left>
          <Button transparent iconLeft>
             <Icon ios='logo-buffer'
@@ -227,14 +230,14 @@ export default class Home extends React.Component {
         </Header>
         <StatusBar
           barStyle='light-content'
-          backgroundColor='#6c5ce7'
+          backgroundColor='#3897f1'
           networkActivityIndicatorVisible
         />
 
         <PTRView
           onRefresh={this._refresh}
-          colors="#6c5ce7"
-          progressBackgroundColor="#6c5ce7"
+          colors="#3897f1"
+          progressBackgroundColor="#3897f1"
         >
           <Text style={styles.title}>Pending Schedules</Text>
           {!this.state.showLoading
@@ -255,7 +258,7 @@ export default class Home extends React.Component {
                           {customer['Customer']['full_name']}
                         </Text>
                       </View>
-  
+
                       <View
                         style={{
                           flexDirection: 'row',
@@ -268,7 +271,7 @@ export default class Home extends React.Component {
                           {customer['Service']['name']}
                         </Text>
                       </View>
-  
+
                       <View
                         style={{
                           flexDirection: 'row',
@@ -281,7 +284,7 @@ export default class Home extends React.Component {
                           {customer['Schedule']['datetime']}
                         </Text>
                       </View>
-  
+
                       <View
                         style={{
                           flexDirection: 'row',
@@ -294,14 +297,14 @@ export default class Home extends React.Component {
                           {customer['Schedule']['phone']}
                         </Text>
                       </View>
-  
+
                       <Text style={styles.address}>Address</Text>
                       <View style={{ alignContent: 'center', padding: 10 }}>
                         <Text style={styles.child}>
                           {customer['Schedule']['address']}
                         </Text>
                       </View>
-  
+
                       <View
                         style={{
                           flexDirection: 'row',
@@ -320,22 +323,22 @@ export default class Home extends React.Component {
                           <Text style={styles.button}>Accept</Text>
                         </Button>
                         {
-        customer['Schedule']['provider_confirm'] == 'yes' ? 
+        customer['Schedule']['provider_confirm'] == 'yes' ?
         <Button small disabled success style={styles.button}>
          <Text style={styles.buttonText}>Schedule Accepted</Text>
        </Button> :
        null
       }
                       </View>
-                     
+
                     </Card>
                   );
                 })
-              ): 
-              <View style={{ 
-              top: 0, left: 0, 
-              right: 0, bottom: 0, 
-              justifyContent: 'center', 
+              ):
+              <View style={{
+              top: 0, left: 0,
+              right: 0, bottom: 0,
+              justifyContent: 'center',
               alignItems: 'center'}}>
                 <Text style={styles.title}>No Schedule yet</Text>
               </View>
@@ -393,7 +396,7 @@ export default class Home extends React.Component {
                 justifyContent: 'center',
                 alignSelf: 'center',
                 marginTop: 20,
-                backgroundColor: '#6c5ce7'
+                backgroundColor: '#3897f1'
               }}
             >
              <Text style={{fontFamily: 'NunitoSans-Regular', padding: 4, color: '#fff'}}>CLOSE</Text>
@@ -409,7 +412,7 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: 'NunitoSans-Regular',
     fontSize: 18,
-    color: '#6c5ce7',
+    color: '#3897f1',
     textAlign: 'center',
     marginTop: 10,
   },

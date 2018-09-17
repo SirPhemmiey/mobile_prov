@@ -28,12 +28,12 @@ export default class Welcome extends React.Component {
         componentWillMount() {
             AsyncStorage.setItem('seeWelcome', 'yes')
         }
- 
+
     render() {
         const Square = ({ isLight, selected }) => {
             let backgroundColor;
             if (isLight) {
-              backgroundColor = selected ? '#6c5ce7' : 'rgba(0, 0, 0, 0.3)';
+              backgroundColor = selected ? '#3897f1' : 'rgba(0, 0, 0, 0.3)';
             } else {
               backgroundColor = selected ? '#fff' : 'rgba(255, 255, 255, 0.5)';
             }
@@ -48,7 +48,7 @@ export default class Welcome extends React.Component {
               />
             );
           };
-        const backgroundColor = isLight => (isLight ? '#6c5ce7' : 'lightblue');
+        const backgroundColor = isLight => (isLight ? '#3897f1' : 'lightblue');
 const color = isLight => backgroundColor(!isLight);
 
 const Done = ({ isLight, ...props }) => (
@@ -106,7 +106,7 @@ const Next = ({ isLight, ...props }) => (
       <Container>
              <StatusBar
     barStyle='light-content'
-    backgroundColor='#6c5ce7'
+    backgroundColor='#3897f1'
     networkActivityIndicatorVisible
   />
    <Onboarding
@@ -139,15 +139,15 @@ DoneButtonComponent={Done}
         use and contact them directly.</Text>,
       }
   ]}
-/>        
+/>
       </Container>
         )
     }
-} 
+}
 
 const styles = {
     wrapper: {
-        backgroundColor: '#6c5ce7',
+        backgroundColor: '#3897f1',
     },
     slide: {
         flex: 1,
@@ -169,7 +169,7 @@ const styles = {
     continue: {
         width: '25%',
         marginTop: 20,
-        backgroundColor: '#6c5ce7',
+        backgroundColor: '#3897f1',
         justifyContent: 'center',
         marginLeft: 150
     }

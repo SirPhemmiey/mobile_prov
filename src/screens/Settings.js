@@ -8,7 +8,6 @@ import {
   Title,
   Left,
   Right,
-  Thumbnail,
   List,
   ListItem,
   Switch
@@ -25,25 +24,28 @@ import {
   ToastAndroid
 } from 'react-native'
 import Config from 'react-native-config'
-import { Avatar, Card, Divider } from 'react-native-elements'
+import { Card } from 'react-native-elements'
 import ImagePicker from 'react-native-image-picker'
 import Image from 'react-native-image-progress';
 import ProgressBar from 'react-native-progress/Bar';
 const links = [
   {
     link: 'editProfile',
-    label: 'Edit Profile',
-    icon: 'ios-contact-outline'
+    label: 'Update Profile',
+    ios: 'ios-contact',
+    android: 'md-contact'
   },
   {
     link: 'changePassword',
     label: 'Change Password',
-    icon: 'ios-lock-outline'
+    ios: 'ios-lock',
+    android: 'md-lock'
   },
   {
     link: 'changeSettings',
     label: 'Change Settings',
-    icon: 'ios-settings-outline'
+    ios: 'ios-settings',
+    android: 'md-settings'
   }
 ]
 export default class Settings extends React.Component {
@@ -62,7 +64,7 @@ export default class Settings extends React.Component {
     }
     this.logout = this.logout.bind(this);
     this.navigateToScreen = this.navigateToScreen.bind(this);
-  } 
+  }
   logout(){
     let keys = ['jwt'];
     AsyncStorage.multiRemove(keys, err => {
@@ -109,7 +111,7 @@ export default class Settings extends React.Component {
         path: 'images'
       }
     }
-    ImagePicker.showImagePicker(options, response => {  
+    ImagePicker.showImagePicker(options, response => {
       if (response.didCancel) {
         //console.warn('User cancelled image picker')
       } else if (response.error) {
@@ -178,21 +180,21 @@ export default class Settings extends React.Component {
            else {
             this.setState({
               showLoading: false,
-              showDialog: true, 
+              showDialog: true,
               dialogTitle: 'Oops!',
               dialogMessage: res
             })
            }
-         }) 
+         })
          .catch(err => {
            this.setState({
              showLoading: false,
-             showDialog: true, 
+             showDialog: true,
              dialogTitle: 'Error',
              dialogMessage: 'An error occured.' + err.message
-           }) 
+           })
         })
-         
+
          this.setState({
            avatarSource: response.uri
          })
@@ -210,11 +212,11 @@ export default class Settings extends React.Component {
     return (
       <Container>
 
-        <Header style={{ backgroundColor: '#6c5ce7' }}>
+        <Header style={{ backgroundColor: '#3897f1' }}>
           <Left>
             <Button transparent iconLeft onPress={() => goBack()}>
-              <Icon ios='ios-arrow-back'
-                android='md-arrow-back' />
+            <Icon ios='ios-arrow-back'
+                android='md-arrow-back' onPress={() => goBack()} />
             </Button>
           </Left>
           <Body>
@@ -224,7 +226,7 @@ export default class Settings extends React.Component {
         </Header>
         <StatusBar
           barStyle='light-content'
-          backgroundColor='#6c5ce7'
+          backgroundColor='#3897f1'
           networkActivityIndicatorVisible
         />
         <Content>
@@ -240,14 +242,14 @@ export default class Settings extends React.Component {
               }}
             >
               <TouchableOpacity onPress={this._handleUpload}>
-                <Image 
+                <Image
                 source={{
                   uri: this.state.avatarSource ? this.state.avatarSource : Config.PROVIDER_PIC + profile.pic
-                }} 
-                indicator={ProgressBar} 
+                }}
+                indicator={ProgressBar}
                 style={{
-                  width: 320, 
-                  height: 240, 
+                  width: 320,
+                  height: 240,
                 }}/>
               </TouchableOpacity>
               <Text style={styles.title}>{profile.name}</Text>
@@ -264,7 +266,7 @@ export default class Settings extends React.Component {
                 <Text>Enable push Notifications</Text>
               </Body>
               <Right>
-                <Switch onValueChange={notiValue => this.setState({notiValue})}  value={true} thumbTintColor="#6c5ce7"/>
+                <Switch onValueChange={notiValue => this.setState({notiValue})}  value={true} thumbTintColor="#3897f1"/>
               </Right>
             </ListItem>
             </Card>
@@ -277,7 +279,8 @@ export default class Settings extends React.Component {
               <Card>
                 <ListItem noBorder icon>
                 <Left>
-                  <Icon name={url['icon']} />
+                  <Icon android={url['android']}
+                    ios={url['ios']} />
                 </Left>
                 <Body>
                       <Text
@@ -297,7 +300,8 @@ export default class Settings extends React.Component {
               <Card>
                 <ListItem noBorder icon>
                 <Left>
-                  <Icon name="ios-log-out" />
+                  <Icon android="md-log-out"
+                    ios="ios-log-out" />
                 </Left>
                 <Body>
                   <Text
@@ -311,11 +315,11 @@ export default class Settings extends React.Component {
               </Card>
           </List>
 
-        
-         
+
+
 
           <ActivityIndicator
-            color='#6c5ce7'
+            color='#3897f1'
             size='small'
             animating={this.state.showLoader}
           />
@@ -329,7 +333,7 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: 'NunitoSans-Regular',
     fontSize: 18,
-    color: '#6c5ce7',
+    color: '#3897f1',
     textAlign: 'center',
     marginTop: 10
   },
@@ -342,7 +346,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignSelf: 'flex-start',
     fontFamily: 'NunitoSans-Regular',
-    color: '#6c5ce7',
+    color: '#3897f1',
     fontSize: 16
   },
   logout: {
@@ -350,7 +354,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignSelf: 'flex-start',
     fontFamily: 'NunitoSans-Regular',
-    color: '#6c5ce7',
+    color: '#3897f1',
     fontSize: 16
   }
 })
