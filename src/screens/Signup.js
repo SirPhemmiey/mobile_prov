@@ -6,7 +6,8 @@ import {
 import Config from 'react-native-config'
 import { Button } from 'react-native-elements';
 import { Text, View, Image } from 'react-native-animatable';
-import { ProgressDialog, Dialog } from 'react-native-simple-dialogs'
+import { ProgressDialog, Dialog } from 'react-native-simple-dialogs';
+import PasswordInputText from '../components/PasswordInput';
 
 export default class Signup extends React.Component {
   static navigationOptions = {
@@ -26,49 +27,73 @@ export default class Signup extends React.Component {
       dialogTitle: '',
       dialogMessage: ''
     }
-    this._handleSignup = this._handleSignup.bind(this)
+    this._handleSignup = this._handleSignup.bind(this);
     this._handleLogin = this._handleLogin.bind(this);
-
+    this._checkLength = this._checkLength.bind(this);
   }
 
+  _checkLength(val, len) {
+    if (val.length < Number(len)) {
+      return false;
+    }
+    else {
+      return true;
+    }
+  }
   _handleSignup(){
       const { full_name, email, phone, password, confirm } = this.state;
     if (full_name != '' && email != '' && phone != '' && password != '' && confirm != '') {
       if (password === confirm) {
-        this.setState({ showLoading: true })
-      fetch(Config.API_URL+'/ProvApi/signup', {
-        method: 'POST',
-        body: JSON.stringify({
-          full_name: this.state.full_name,
-          password: this.state.password,
-          email: this.state.email,
-          phone: this.state.phone,
-          type: 'Provider'
-        })
-      })
-        .then(res => res.json())
-        .then(res => {
-          this.setState({ showLoading: false })
-          if (res.success) {
-            this.setState({
-              showDialog: true,
-              dialogMessage: 'Success! You may now login.'
+        if (this._checkLength(full_name, 5)) {
+          if (this._checkLength(phone, 10)) {
+            this.setState({ showLoading: true })
+            fetch(Config.API_URL+'/ProvApi/signup', {
+              method: 'POST',
+              body: JSON.stringify({
+                full_name: this.state.full_name,
+                password: this.state.password,
+                email: this.state.email,
+                phone: this.state.phone,
+                type: 'Provider'
+              })
             })
-            this._handleLogin(phone, password);
-          } else if (res.error) {
-            this.setState({
-              showDialog: true,
-              dialogMessage: res.error
-            })
+              .then(res => res.json())
+              .then(res => {
+                this.setState({ showLoading: false })
+                if (res.success) {
+                  this.setState({
+                    showDialog: true,
+                    dialogMessage: 'Success! You may now login.'
+                  })
+                  this._handleLogin(phone, password);
+                } else if (res.error) {
+                  this.setState({
+                    showDialog: true,
+                    dialogMessage: res.error
+                  })
+                }
+              })
+              .catch(err => {
+                this.setState({ showLoading: false })
+                this.setState({
+                  showDialog: true,
+                  dialogMessage: err.message
+                })
+              })
           }
-        })
-        .catch(err => {
-          this.setState({ showLoading: false })
+          else {
+            this.setState({
+              showDialog: true,
+              dialogMessage: 'Phone number must be 10 or 11 characters'
+            });
+          }
+        }
+        else {
           this.setState({
             showDialog: true,
-            dialogMessage: err.message
-          })
-        })
+            dialogMessage: 'Full name must be more than 5 characters'
+          });
+        }
       }
       else {
         this.setState({
@@ -127,7 +152,7 @@ export default class Signup extends React.Component {
   render () {
     const { navigate } = this.props.navigation
     return (
-      <ImageBackground blurRadius={1} style={styles.bg} source={{uri: 'http://www.stylefit.ng/img/b1.jpg'}}>
+      <ImageBackground blurRadius={1} style={styles.bg} source={require('../assets/images/b1.jpg')}>
       <Content style={styles.containerView}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View animation={'slideInDown'} delay={600} duration={400} style={styles.loginScreenContainer}>
@@ -144,6 +169,7 @@ export default class Signup extends React.Component {
                   source={require('../assets/images/logo_former.png')}
                 />
                 <TextInput
+
                 ref="full_name"
                 returnKeyType='next'
                 style={styles.loginFormTextInput}
@@ -178,24 +204,26 @@ export default class Signup extends React.Component {
                 onSubmitEditing={() => this.password.focus()}
                 />
 
-                <TextInput
-                  placeholder="Password"
-                  returnKeyType='next'
-                  ref={(input) => this.password = input}
-                  style={styles.loginFormTextInput}
-                  secureTextEntry
-                  underlineColorAndroid='transparent'
-                  onSubmitEditing={() => this.confirm.focus()}
-                  onChangeText={password => this.setState({ password })} />
+                    <PasswordInputText
+                    placeholder="Password"
+                    iconStyle={styles.iconStyle}
+                    returnKeyType='next'
+                    ref={(input) => this.password = input}
+                    style={styles.loginFormTextInput}
+                    underlineColorAndroid='transparent'
+                    onSubmitEditing={() => this.confirm.focus()}
+                    onChangeText={password => this.setState({ password })}
+                />
 
-                  <TextInput
-                  placeholder="Confirm Password"
-                  returnKeyType='go'
-                  ref={(input) => this.confirm= input}
-                  style={styles.loginFormTextInput}
-                  secureTextEntry
-                  underlineColorAndroid='transparent'
-                  onChangeText={confirm => this.setState({ confirm })} />
+                    <PasswordInputText
+                    iconStyle={styles.iconStyle}
+                    placeholder="Confirm Password"
+                    returnKeyType='go'
+                    ref={(input) => this.confirm= input}
+                    style={styles.loginFormTextInput}
+                    underlineColorAndroid='transparent'
+                    onChangeText={confirm => this.setState({ confirm })}
+                />
 
                 <Button
                   buttonStyle={styles.loginButton}
@@ -247,53 +275,13 @@ export default class Signup extends React.Component {
     )
   }
 }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1
-//   },
-//   logo: {
-//     width: 250,
-//     height: 80
-//   },
-//   title: {
-//     fontFamily: 'NunitoSans-Regular',
-//     fontSize: 18,
-//     alignSelf: 'center',
-//     color: '#6c5ce7',
-//     textAlign: 'center',
-//     marginTop: 20
-//   },
-//   logoContainer: {
-//     justifyContent: 'center',
-//     alignContent: 'center',
-//     alignItems: 'center',
-//   },
-//   loginText: {
-//     fontWeight: 'bold',
-//     fontFamily: 'NunitoSans-Regular'
-//   },
-//   loginButton: {
-//     // backgroundColor: '#6c5ce7',
-//     // borderRadius: 5,
-//     // padding: 5,
-//     marginTop: 15,
-//     alignSelf: 'center'
-//   },
-//   signupButton: {
-//     // backgroundColor: '#6c5ce7',
-//     // borderRadius: 5,
-//     // padding: 5,
-//     marginTop: 15,
-//     alignSelf: 'center'
-//   },
-//   input: {
-//     fontFamily: 'NunitoSans-Regular'
-//   }
-// })
-
 const styles = StyleSheet.create({
 
+  iconStyle: {
+    position: 'absolute',
+    top: 27,
+    right: 15,
+  },
   separatorContainer: {
     alignItems: 'center',
     flexDirection: 'row',
@@ -367,10 +355,5 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     height: 45,
     marginTop: 10,
-  },
-  fbLoginButton: {
-    height: 45,
-    marginTop: 10,
-    backgroundColor: 'transparent',
   },
 })

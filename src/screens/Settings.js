@@ -21,7 +21,8 @@ import {
   Text,
   View,
   TouchableOpacity,
-  ToastAndroid
+  ToastAndroid,
+  ImageBackground
 } from 'react-native'
 import Config from 'react-native-config'
 import { Card } from 'react-native-elements'
@@ -41,12 +42,12 @@ const links = [
     ios: 'ios-lock',
     android: 'md-lock'
   },
-  {
-    link: 'changeSettings',
-    label: 'Change Settings',
-    ios: 'ios-settings',
-    android: 'md-settings'
-  }
+  // {
+  //   link: 'changeSettings',
+  //   label: 'Change Settings',
+  //   ios: 'ios-settings',
+  //   android: 'md-settings'
+  // }
 ]
 export default class Settings extends React.Component {
   static navigationOptions = {
@@ -255,6 +256,17 @@ export default class Settings extends React.Component {
               <Text style={styles.title}>{profile.name}</Text>
             </View>
           </Card>
+
+          {/* <ImageBackground
+          style={{
+            width: 320,
+            height: 240,
+          }}
+          source={{
+            uri: this.state.avatarSource ? this.state.avatarSource : Config.PROVIDER_PIC + profile.pic
+          }}>
+
+          </ImageBackground> */}
 
           <List>
             <Card>

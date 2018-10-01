@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, Image, StatusBar, AsyncStorage, ImageBackground, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native'
+import { StyleSheet, Image, StatusBar, AsyncStorage, ImageBackground, TextInput, TouchableWithoutFeedback, Keyboard, TouchableOpacity } from 'react-native'
 import {
   Content,
 } from 'native-base'
@@ -9,6 +9,7 @@ import Config from 'react-native-config'
 import { NavigationActions } from 'react-navigation'
 import { ProgressDialog, Dialog } from 'react-native-simple-dialogs'
 import SplashScreen from 'react-native-splash-screen'
+import PasswordInputText from '../components/PasswordInput';
 
 export default class Login extends React.Component {
   static navigationOptions = {
@@ -25,6 +26,7 @@ export default class Login extends React.Component {
       dialogMessage: '',
     }
     this._handleLogin = this._handleLogin.bind(this)
+    this._gotoForgotPassword = this._gotoForgotPassword.bind(this);
     //SplashScreen.show()
 
   }
@@ -83,6 +85,9 @@ export default class Login extends React.Component {
       })
     }
   }
+  _gotoForgotPassword() {
+
+  }
 //   componentWillMount() {
 //     SplashScreen.hide();
 //    AsyncStorage.getItem('jwt').then(token => {
@@ -129,7 +134,7 @@ async componentWillMount() {
   render () {
     const { navigate } = this.props.navigation
     return (
-      <ImageBackground blurRadius={1} style={styles.bg} source={{uri: 'http://www.stylefit.ng/img/b1.jpg'}}>
+      <ImageBackground blurRadius={1} style={styles.bg} source={require('../assets/images/b1.jpg')}>
       <Content style={styles.containerView}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View animation={'slideInUp'} delay={600} duration={400} style={styles.loginScreenContainer}>
@@ -158,20 +163,24 @@ async componentWillMount() {
                 onSubmitEditing={() => this.password.focus()}
                 autoCorrect={false} />
 
-                <TextInput
-                  placeholder="Password"
-                  returnKeyType='go'
-                  ref={(input) => this.password = input}
-                  style={styles.loginFormTextInput}
-                  secureTextEntry
-                  underlineColorAndroid='transparent'
-                  onChangeText={password => this.setState({ password })} />
+                    <PasswordInputText
+                    placeholder="Password"
+                    returnKeyType='go'
+                    ref={(input) => this.password = input}
+                    style={styles.loginFormTextInput}
+                    underlineColorAndroid='transparent'
+                    onChangeText={password => this.setState({ password })}
+                />
 
                 <Button
                   buttonStyle={styles.loginButton}
                   onPress={this._handleLogin}
                   title="Login"
                 />
+
+                <TouchableOpacity onPress={() => navigate('forgotPassword')} style={{ marginLeft: 20, marginTop:10}}>
+                  <Text>Forgot Password?</Text>
+                </TouchableOpacity>
 
           <View style={styles.separatorContainer} animation={'slideInLeft'} delay={700} duration={400}>
           <View style={styles.separatorLine} />
@@ -216,44 +225,6 @@ async componentWillMount() {
     )
   }
 }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1
-//   },
-//   logo: {
-//     width: 250,
-//     height: 80
-//   },
-//   title: {
-//     fontFamily: 'NunitoSans-Regular',
-//     fontSize: 18,
-//     alignSelf: 'center',
-//     color: '#3897f1',
-//     textAlign: 'center',
-//     marginTop: 20
-//   },
-//   logoContainer: {
-//     justifyContent: 'center',
-//     alignContent: 'center',
-//     alignItems: 'center'
-//   },
-//   loginText: {
-//     fontWeight: 'bold',
-//     fontFamily: 'NunitoSans-Regular'
-//   },
-//   loginButton: {
-//     marginTop: 15,
-//     alignSelf: 'center'
-//   },
-//   signupButton: {
-//     marginTop: 15,
-//     alignSelf: 'center'
-//   },
-//   input: {
-//     fontFamily: 'NunitoSans-Regular'
-//   }
-// })
 
 
 const styles = StyleSheet.create({
@@ -307,13 +278,6 @@ const styles = StyleSheet.create({
     marginTop: 150,
     marginBottom: 30,
   },
-  // logoText: {
-  // //  fontSize: 40,
-  // //  fontWeight: "800",
-  //   marginTop: 150,
-  //   marginBottom: 30,
-  //   //textAlign: 'center',
-  // },
   loginFormView: {
     flex: 1
   },
@@ -338,11 +302,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     height: 45,
     marginTop: 10,
-  },
-  fbLoginButton: {
-    height: 45,
-    marginTop: 10,
-    backgroundColor: 'transparent',
   },
 })
 

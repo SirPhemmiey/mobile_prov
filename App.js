@@ -15,7 +15,9 @@ import Mapping from './src/screens/Mapping';
 import EditProfile from './src/screens/EditProfile'
 import { Client } from 'bugsnag-react-native';
 import codePush from 'react-native-code-push';
-let codePushOptions = { checkFrequency: codePush.CheckFrequency.ON_APP_RESUME };
+let codePushOptions =
+{ checkFrequency: codePush.CheckFrequency.ON_APP_RESUME,
+  installMode: codePush.InstallMode.ON_NEXT_RESUME };
 const bugsnag = new Client();
 
 
@@ -136,7 +138,7 @@ const Application = StackNavigator(
   }
 )
 
-export default class App extends React.Component {
+class App extends React.Component {
   render () {
     //console.disableYellowBox = true
     return <Application />
@@ -144,3 +146,4 @@ export default class App extends React.Component {
 }
 // App = codePush(App);
 App = codePush(codePushOptions)(App);
+export default App;

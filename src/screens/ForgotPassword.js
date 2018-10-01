@@ -1,30 +1,22 @@
 import React from 'react'
-import { StyleSheet, Image, Alert, StatusBar, AsyncStorage, TouchableOpacity } from 'react-native'
+import { StyleSheet, Image, StatusBar, AsyncStorage, ImageBackground, TextInput, TouchableWithoutFeedback, Keyboard, TouchableOpacity } from 'react-native'
 import {
-  Container,
-  Header,
   Content,
-  Label,
-  Text,
-  Form,
-  Item,
-  Input,
-  Button,
-  View,
-  Footer
 } from 'native-base'
+import { Text, View } from 'react-native-animatable';
+import { Button } from 'react-native-elements';
 import Config from 'react-native-config'
 import { NavigationActions } from 'react-navigation'
 import { ProgressDialog, Dialog } from 'react-native-simple-dialogs'
 
-export default class ForgotPassword extends React.Component {
+export default class Login extends React.Component {
   static navigationOptions = {
     header: null
   }
   constructor (props) {
     super()
     this.state = {
-      username: '',
+      phone: '',
       showLoading: false,
       showDialog: false,
       dialogTitle: '',
@@ -33,13 +25,21 @@ export default class ForgotPassword extends React.Component {
     this._handleForgot = this._handleForgot.bind(this);
   }
 
-  _handleForgot() {
-    if (this.state.username != '') {
+  navigateToLogin = () => {
+    const toHome = NavigationActions.reset({
+      index: 0,
+      actions: [NavigationActions.navigate({ routeName: 'tabStack' })]
+    })
+    this.props.navigation.dispatch(toHome)
+  }
+
+ _handleForgot() {
+    if (this.state.phone != '') {
       this.setState({ showLoading: true })
       fetch(Config.API_URL + '/ProvApi/forgot_password', {
         method: 'POST',
         body: JSON.stringify({
-          username: this.state.username,
+          username: this.state.phone,
         })
       })
         .then(res => res.json())
@@ -48,7 +48,7 @@ export default class ForgotPassword extends React.Component {
           if (res == 'sent') {
             this.setState({
               showDialog: true,
-              dialogMessage: 'A new password has been sent to your email. Please use it to login and change it after you\'re logged in'
+              dialogMessage: 'A new password has been sent to your email address registered with us. Please use it to login and change it after you\'re logged in.'
             })
           } else if (res == 'error') {
             this.setState({
@@ -59,7 +59,7 @@ export default class ForgotPassword extends React.Component {
           else {
             this.setState({
               showDialog: true,
-              dialogMessage: "Looks like this email address does not exit. Please check again."
+              dialogMessage: "No match for this phone number."
             })
           }
         })
@@ -73,7 +73,7 @@ export default class ForgotPassword extends React.Component {
     } else {
       this.setState({
         showDialog: true,
-        dialogMessage: 'Email field is required'
+        dialogMessage: 'Phone number field is required'
       })
     }
   }
@@ -81,51 +81,55 @@ export default class ForgotPassword extends React.Component {
   render () {
     const { navigate } = this.props.navigation
     return (
-      <Container>
-        <Content style={{ padding: 10, flex: 1 }}>
+      <ImageBackground blurRadius={1} style={styles.bg} source={require('../assets/images/b1.jpg')}>
+      <Content style={styles.containerView}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View animation={'slideInUp'} delay={600} duration={400} style={styles.loginScreenContainer}>
           <StatusBar
             barStyle='light-content'
-            backgroundColor='#6c5ce7'
+            backgroundColor='#3897f1'
             networkActivityIndicatorVisible
           />
-          <View style={styles.logoContainer}>
-            <Text style={styles.title}>Forgot Password</Text>
-          </View>
-          <Form>
-            <Item floatingLabel>
-              <Label style={{ fontFamily: 'NunitoSans-Regular' }}>
-                Username
-              </Label>
-              <Input
-                style={styles.input}
-                returnKeyType='next'
-                onSubmitEditing={() => this.passwordInput.focus()}
-                onChangeText={username => this.setState({ username })}
-                keyboardType='email-address'
+            <View style={styles.loginFormView}>
+              <View style={styles.logoContainer}>
+                <Image animation={'zoomIn'} delay={700} duration={400}
+                  style={styles.logo}
+                  resizeMode='contain'
+                  source={require('../assets/images/logo_former.png')}
+                />
+              </View>
+                <TextInput
+                returnKeyType='go'
+                style={styles.loginFormTextInput}
+                 onChangeText={phone => this.setState({ phone })}
+                keyboardType='numeric'
                 autoCapitalize='none'
-                autoCorrect={false}
+                placeholder="Phone number"
+                underlineColorAndroid='transparent'
+                autoCorrect={false} />
+
+                <Button
+                  buttonStyle={styles.loginButton}
+                  onPress={this._handleForgot}
+                  title="Recover"
+                />
+
+          <View style={styles.separatorContainer} animation={'slideInLeft'} delay={700} duration={400}>
+          <View style={styles.separatorLine} />
+          <Text style={styles.separatorOr}>{'Or'}</Text>
+          <View style={styles.separatorLine} />
+          </View>
+              <View animation={'slideInDown'} delay={800} duration={400}>
+              <Button
+                buttonStyle={styles.loginButton}
+                onPress={() => navigate('Login')}
+                title="Login"
               />
-            </Item>
-            <Button
-              bordered
-              small
-              onPress={this._handleForgot}
-              style={styles.loginButton}
-            >
-              <Text style={styles.loginText}>Next</Text>
-            </Button>
-            <View style={{ flex: 3 }} />
-            <Button
-              onPress={() => navigate('Login')}
-              small
-              style={styles.signupButton}
-            >
-              <Text style={styles.loginText}>Login</Text>
-            </Button>
-          </Form>
+              </View>
+            </View>
           <ProgressDialog
             visible={this.state.showLoading}
-            title='Initiating'
+            title='Recovering your password'
             message='Please wait...'
           />
           <Dialog
@@ -140,66 +144,96 @@ export default class ForgotPassword extends React.Component {
               </Text>
             </View>
             <Button
-              small
-              light
-              onPress={() => this.setState({ showDialog: false })}
-              style={{
-                justifyContent: 'center',
-                alignSelf: 'center',
-                marginTop: 20,
-                backgroundColor: '#6c5ce7'
-              }}
-            >
-              <Text style={{fontFamily: 'NunitoSans-Regular', padding: 4, color: '#fff'}}>CLOSE</Text>
-            </Button>
+                buttonStyle={styles.dialogButton}
+                onPress={() => this.setState({ showDialog: false })}
+                color="#fff"
+                title="Close"
+                />
           </Dialog>
-        </Content>
-        <Footer style={{ backgroundColor: '#6c5ce7' }}>
-        </Footer>
-      </Container>
+        </View>
+        </TouchableWithoutFeedback>
+      </Content>
+      </ImageBackground>
     )
   }
 }
 
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1
+
+  separatorContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginVertical: 20
+  },
+  separatorLine: {
+    flex: 1,
+    borderWidth: StyleSheet.hairlineWidth,
+    height: StyleSheet.hairlineWidth,
+    borderColor: '#9B9FA4'
+  },
+  separatorOr: {
+    color: '#9B9FA4',
+    marginHorizontal: 8
+  },
+  dialogButton: {
+    justifyContent: 'center',
+    alignSelf: 'center',
+    marginTop: 20,
+    backgroundColor: '#3897f1',
+    borderRadius: 5,
+  },
+  bg: {
+    flex: 1,
+    width: null,
+    height: null,
   },
   logo: {
-    width: 300,
-    height: 100
+    // width: 80,
+    // height: 80,
+    alignItems: 'center',
+    alignSelf: 'center'
   },
-  title: {
-    fontFamily: 'NunitoSans-Regular',
-    fontSize: 18,
-    alignSelf: 'center',
-    color: '#6c5ce7',
-    textAlign: 'center'
+  containerView: {
+    flex: 1,
+  },
+  loginScreenContainer: {
+    flex: 1,
+  },
+  logoLoginText: {
+    fontSize: 30,
+    fontWeight: "200",
+    textAlign: 'center',
+    fontFamily: 'NunitoSans-Regular'
   },
   logoContainer: {
-    justifyContent: 'center',
-    alignContent: 'center',
-    flexGrow: 1
+    marginTop: 150,
+    marginBottom: 30,
   },
-  loginText: {
-    fontWeight: 'bold',
-    fontFamily: 'NunitoSans-Regular'
+  loginFormView: {
+    flex: 1
+  },
+  loginFormTextInput: {
+    height: 43,
+    fontSize: 14,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: '#eaeaea',
+    backgroundColor: '#fafafa',
+    fontFamily: 'NunitoSans-Regular',
+    paddingLeft: 10,
+    marginLeft: 15,
+    marginRight: 15,
+    marginTop: 5,
+    marginBottom: 5,
+
   },
   loginButton: {
-    // backgroundColor: '#6c5ce7',
-    // borderRadius: 5,
-    // padding: 5,
-    marginTop: 15,
-    alignSelf: 'center'
+    backgroundColor: '#3897f1',
+    //backgroundColor: '#3897f1',
+    borderRadius: 5,
+    height: 45,
+    marginTop: 10,
   },
-  signupButton: {
-    // backgroundColor: '#6c5ce7',
-    // borderRadius: 5,
-    // padding: 5,
-    marginTop: 15,
-    alignSelf: 'center'
-  },
-  input: {
-    fontFamily: 'NunitoSans-Regular'
-  }
 })
+
