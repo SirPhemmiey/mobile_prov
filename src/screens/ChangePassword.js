@@ -38,7 +38,7 @@ export default class ChangePassword extends React.Component {
     if (oldPassword != '' && newPassword != '' && newPassword2 != '') {
       this.setState({ showLoading: true })
       AsyncStorage.getItem('jwt').then(token => {
-        fetch(Config.API_URL + '/provapi/change_password', {
+        fetch(Config.API_URL + '/ProvApi/change_password', {
         method: 'POST',
          headers: {
           'Accept': 'application/json',
@@ -68,7 +68,7 @@ export default class ChangePassword extends React.Component {
           else if (res == 'oldDiff') {
             this.setState({
                 showDialog: true,
-                dialogMessage: "Your old password does not match"
+                dialogMessage: "Your old password is incorrect"
               })
           }
           else if (res == 'newPassDiff') {
@@ -77,7 +77,6 @@ export default class ChangePassword extends React.Component {
                 dialogMessage: "New passwords are different"
               })
           }
-
         })
         .catch(err => {
           this.setState({
@@ -171,19 +170,11 @@ export default class ChangePassword extends React.Component {
               </Text>
             </View>
             <Button
-              small
-              light
-              onPress={() => this.setState({ showDialog: false })}
-              style={{
-                justifyContent: 'center',
-                alignSelf: 'center',
-                marginTop: 20,
-                padding: 3,
-                backgroundColor: '#6c5ce7'
-              }}
-            >
-             <Text style={{fontFamily: 'NunitoSans-Regular', padding: 4, color: '#fff'}}>CLOSE</Text>
-            </Button>
+                  buttonStyle={styles.dialogButton}
+                  onPress={() => this.setState({ showDialog: false })}
+                  color="#fff"
+                  title="Close"
+            />
           </Dialog>
         </Content>
       </Container>
@@ -192,6 +183,13 @@ export default class ChangePassword extends React.Component {
 }
 
 const styles = StyleSheet.create({
+  dialogButton: {
+    justifyContent: 'center',
+    alignSelf: 'center',
+    marginTop: 20,
+    backgroundColor: '#3897f1',
+    borderRadius: 5,
+  },
   loginFormTextInput: {
     height: 43,
     fontSize: 14,

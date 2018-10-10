@@ -140,7 +140,7 @@ const Application = StackNavigator(
 
 class App extends React.Component {
   render () {
-    //console.disableYellowBox = true
+    console.disableYellowBox = true
     return <Application />
   }
 }

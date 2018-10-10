@@ -3,6 +3,7 @@ package com.provider_stylefit;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.reactnative.ivpusic.imagepicker.PickerPackage;
 import com.microsoft.codepush.react.CodePush;
 import com.avishayil.rnrestart.ReactNativeRestartPackage;
 import com.bugsnag.BugsnagReactNative;
@@ -10,7 +11,6 @@ import com.geektime.rnonesignalandroid.ReactNativeOneSignalPackage;
 import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.airbnb.android.react.maps.MapsPackage;
-import com.imagepicker.ImagePickerPackage;
 import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
@@ -38,6 +38,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new PickerPackage(),
             // new CodePush(getResources().getString(R.string.reactNativeCodePush_androidDeploymentKey), getApplicationContext(), BuildConfig.DEBUG),
             new CodePush(BuildConfig.CODEPUSH_KEY, MainApplication.this, BuildConfig.DEBUG),
             new ReactNativeRestartPackage(),
@@ -46,7 +47,6 @@ public class MainApplication extends Application implements ReactApplication {
             new SplashScreenReactPackage(),
             new VectorIconsPackage(),
             new MapsPackage(),
-            new ImagePickerPackage(),
             new ReactNativeConfigPackage()
       );
     }

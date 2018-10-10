@@ -10,7 +10,8 @@ import {
   Right,
   List,
   ListItem,
-  Switch
+  Switch,
+  View
 } from 'native-base'
 import React from 'react'
 import {
@@ -18,21 +19,20 @@ import {
   AsyncStorage,
   StatusBar,
   StyleSheet,
-  Text,
-  View,
   TouchableOpacity,
   ToastAndroid,
-  ImageBackground
+  Text
 } from 'react-native'
 import Config from 'react-native-config'
-import { Card } from 'react-native-elements'
-import ImagePicker from 'react-native-image-picker'
+import { Card, Button as ButtonNative } from 'react-native-elements'
+import ImagePicker from 'react-native-image-crop-picker';
 import Image from 'react-native-image-progress';
 import ProgressBar from 'react-native-progress/Bar';
+import { ProgressDialog, Dialog } from 'react-native-simple-dialogs'
 const links = [
   {
     link: 'editProfile',
-    label: 'Update Profile',
+    label: 'Update rofile',
     ios: 'ios-contact',
     android: 'md-contact'
   },
@@ -56,18 +56,21 @@ export default class Settings extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      profile: '',
+      profile: [],
       showLoader: true,
-      showDialog: '',
+      showDialog: false,
+      showLoading: false,
       dialogMessage: '',
+      dialogTitle: '',
       avatarSource: '',
       notiValue: ''
     }
     this.logout = this.logout.bind(this);
     this.navigateToScreen = this.navigateToScreen.bind(this);
+    this._handleUpload = this._handleUpload.bind(this);
   }
   logout(){
-    let keys = ['jwt'];
+    let keys = ['jwt', 'phone', 'email'];
     AsyncStorage.multiRemove(keys, err => {
       this.props.navigation.replace('Login');
     });
@@ -94,41 +97,34 @@ export default class Settings extends React.Component {
         .catch(err => {
           this.setState({
             showDialog: true,
-            dialogMessage: err.message,
+            dialogMessage: err.message + "me",
             showLoader: false
           })
         })
     })
   }
-  _handleUpload = () => {
-    var options = {
-      title: 'Choose a picture',
-      takePhotoButtonTitle:'Capture Photo',
-      quality: 1.0,
-      maxWidth: 1000,
-      maxHeight: 1000,
-      storageOptions: {
-        skipBackup: true,
-        path: 'images'
-      }
-    }
-    ImagePicker.showImagePicker(options, response => {
-      if (response.didCancel) {
-        //console.warn('User cancelled image picker')
-      } else if (response.error) {
-        //console.warn('ImagePicker Error: ', response.error)
-      } else if (response.customButton) {
-        //console.warn('Custom button tapped');
-      } else {
-        const data = new FormData();
+
+  _handleUpload () {
+    ImagePicker.openPicker({
+      cropperStatusBarColor: '#3897f1',
+      freeStyleCropEnabled: true,
+      mediaType: 'photo',
+      enableRotationGesture: true,
+      includeBase64: true,
+      cropping: true
+    }).then(image => {
+      var path = image.path;
+      var pathString = path.lastIndexOf("/");
+      var fileName = path.substring(pathString+1);
+      const data = new FormData();
         data.append('image', {
-          uri: response.uri,
-          type: response.type,
-          name: response.fileName
+          uri: path,
+          type: image.mime,
+          name: fileName
         });
-        AsyncStorage.getItem('jwt').then(token => {
+         AsyncStorage.getItem('jwt').then(token => {
           this.setState({showLoading: true})
-         fetch(Config.API_URL + '/Provapi/upload_image', {
+         fetch(Config.API_URL + '/ProvApi/upload_image', {
            method: 'POST',
            headers: {
              'Accept': 'application/json',
@@ -197,11 +193,10 @@ export default class Settings extends React.Component {
         })
 
          this.setState({
-           avatarSource: response.uri
+           avatarSource: path
          })
        })
-      }
-    })
+    });
   }
   componentWillMount () {
     this.loadData()
@@ -210,13 +205,14 @@ export default class Settings extends React.Component {
   render () {
     const profile = this.state.profile
     const { goBack } = this.props.navigation;
+    //const full_name = profile.full_name.toLowerCase().split(" ").map(name => name.charAt(0).toUpperCase() + name.substring(1));
     return (
       <Container>
 
         <Header style={{ backgroundColor: '#3897f1' }}>
           <Left>
-            <Button transparent iconLeft onPress={() => goBack()}>
-            <Icon ios='ios-arrow-back'
+            <Button transparent iconLeft>
+              <Icon ios='ios-arrow-back'
                 android='md-arrow-back' onPress={() => goBack()} />
             </Button>
           </Left>
@@ -230,118 +226,161 @@ export default class Settings extends React.Component {
           backgroundColor='#3897f1'
           networkActivityIndicatorVisible
         />
+        {/* <View animation={'slideOutUp'} delay={800} duration={400}> */}
         <Content>
+ {
+           profile.map(info => {
+             return (
+              <Card key={info.Provider.id}>
 
-          <Card>
-
-            <View
-              style={{
-                flex: 1,
-                alignContent: 'center',
-                alignSelf: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <TouchableOpacity onPress={this._handleUpload}>
-                <Image
-                source={{
-                  uri: this.state.avatarSource ? this.state.avatarSource : Config.PROVIDER_PIC + profile.pic
-                }}
-                indicator={ProgressBar}
+              <View
                 style={{
-                  width: 320,
-                  height: 240,
-                }}/>
-              </TouchableOpacity>
-              <Text style={styles.title}>{profile.name}</Text>
-            </View>
-          </Card>
-
-          {/* <ImageBackground
-          style={{
-            width: 320,
-            height: 240,
-          }}
-          source={{
-            uri: this.state.avatarSource ? this.state.avatarSource : Config.PROVIDER_PIC + profile.pic
-          }}>
-
-          </ImageBackground> */}
-
-          <List>
-            <Card>
-            <ListItem noBorder icon>
-            <Left>
-                <Icon name="ios-notifications-outline"/>
-              </Left>
-              <Body>
-                <Text>Enable push Notifications</Text>
-              </Body>
-              <Right>
-                <Switch onValueChange={notiValue => this.setState({notiValue})}  value={true} thumbTintColor="#3897f1"/>
-              </Right>
-            </ListItem>
+                  flex: 1,
+                  alignContent: 'center',
+                  alignSelf: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                <TouchableOpacity onPress={this._handleUpload}>
+                  <Image
+                  source={{
+                    uri: this.state.avatarSource ? this.state.avatarSource : Config.PROVIDER_PIC + info.Provider.pic
+                  }}
+                  indicator={ProgressBar}
+                  style={{
+                    width: 320,
+                    height: 240,
+                  }}/>
+                  <ButtonNative
+                  buttonStyle={styles.dialogButton}
+                  onPress={this._handleUpload}
+                  color="#fff"
+                  title="Upload"
+            />
+                </TouchableOpacity>
+                <Text style={styles.title}>{info.Provider.name}</Text>
+              </View>
             </Card>
-          </List>
+             );
+           })
+         }
 
-            <List
-            dataArray={links}
-            renderRow={url => (
-              <TouchableOpacity>
-              <Card>
-                <ListItem noBorder icon>
-                <Left>
-                  <Icon android={url['android']}
-                    ios={url['ios']} />
-                </Left>
-                <Body>
-                      <Text
-                    style={styles.item}
-                    onPress={() => this.navigateToScreen(url['link'])}
-                  >
-                    {url['label']}
-                  </Text>
-                </Body>
-              </ListItem>
-              </Card>
-              </TouchableOpacity>
-            )}
-          />
+<List>
+  <Card>
+  <ListItem noBorder icon>
+  <Left>
+      <Icon android="md-notifications-outline" ios="ios-notifications-outline"/>
+    </Left>
+    <Body>
+      <Text>Enable push Notifications</Text>
+    </Body>
+    <Right>
+      <Switch onValueChange={notiValue => this.setState({notiValue})}  value={true} thumbTintColor="#3897f1"/>
+    </Right>
+  </ListItem>
+  </Card>
+</List>
 
-          <List>
-              <Card>
-                <ListItem noBorder icon>
-                <Left>
-                  <Icon android="md-log-out"
-                    ios="ios-log-out" />
-                </Left>
-                <Body>
-                  <Text
-                    style={styles.item}
-                    onPress={this.logout}
-                  >
-                    Logout
-                  </Text>
-                </Body>
-              </ListItem>
-              </Card>
-          </List>
+  <List
+  dataArray={links}
+  renderRow={url => (
+  //  <View animation={'slideOutUp'} delay={700} duration={400}>
+      <TouchableOpacity>
+    <Card>
+      <ListItem noBorder icon>
+      <Left>
+        <Icon android={url['android']}
+        ios={url['ios']} />
+      </Left>
+      <Body>
+            <Text
+          style={styles.item}
+          onPress={() => this.navigateToScreen(url['link'])}
+        >
+          {url['label']}
+        </Text>
+      </Body>
+    </ListItem>
+    </Card>
+    </TouchableOpacity>
+  //  </View>
+  )}
+/>
 
+<List>
+    <Card>
+      <ListItem noBorder icon>
+      <Left>
+        <Icon android="md-log-out"
+        ios="ios-log-out" />
+      </Left>
+      <Body>
+        <Text
+          style={styles.item}
+          onPress={this.logout}
+        >
+          Logout
+        </Text>
+      </Body>
+    </ListItem>
+    </Card>
+</List>
 
-
-
-          <ActivityIndicator
-            color='#3897f1'
-            size='small'
-            animating={this.state.showLoader}
-          />
-        </Content>
+<ActivityIndicator
+  color='#3897f1'
+  size='small'
+  animating={this.state.showLoader}
+/>
+ <ProgressDialog
+  visible={this.state.showLoading}
+  title='Uploading'
+  message='Please wait...'
+/>
+<Dialog
+  visible={this.state.showDialog}
+  onTouchOutside={() => this.setState({ showDialog: false })}
+  contentStyle={{ justifyContent: 'center', alignItems: 'center' }}
+  animationType='slide'
+>
+  <View>
+    <Text style={{fontFamily: 'NunitoSans-Regular'}}>
+      {this.state.dialogMessage}
+    </Text>
+  </View>
+  <Button
+    small
+    light
+    onPress={() => this.setState({ showDialog: false })}
+    style={{
+      justifyContent: 'center',
+      alignSelf: 'center',
+      marginTop: 20,
+      backgroundColor: '#3897f1'
+    }}
+  >
+   <Text style={{fontFamily: 'NunitoSans-Regular', padding: 4, color: '#fff'}}>CLOSE</Text>
+  </Button>
+</Dialog>
+</Content>
+        {/* </View> */}
       </Container>
     )
   }
 }
 
 const styles = StyleSheet.create({
+  dialogButton: {
+    justifyContent: 'center',
+    alignSelf: 'center',
+    marginTop: 10,
+    backgroundColor: '#3897f1',
+    borderRadius: 3,
+    height: 26
+  },
+  searchInput: {
+    fontFamily: 'NunitoSans-Regular',
+    fontSize: 16
+  },
   title: {
     fontFamily: 'NunitoSans-Regular',
     fontSize: 18,

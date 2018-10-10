@@ -1,10 +1,9 @@
 import React from 'react'
-import { StyleSheet, Dimensions, AsyncStorage,View,Text, StatusBar, ToastAndroid, TouchableOpacity } from 'react-native'
+import { StyleSheet, Dimensions, AsyncStorage,View,Text, ToastAndroid } from 'react-native'
 import MapView, { Marker, AnimatedRegion } from 'react-native-maps'
 import MapViewDirections from 'react-native-maps-directions'
 import Config from 'react-native-config';
-import { Dialog } from 'react-native-simple-dialogs';
-import { Container, Content, Footer,Button, Header, Left, Icon, Body, Title, Right } from 'native-base';
+import { Container, Content,Button, } from 'native-base';
 const { width, height } = Dimensions.get('window')
 
 export default class Mapping extends React.Component {
@@ -18,6 +17,7 @@ export default class Mapping extends React.Component {
       customer_long: null,
       error: null,
       flag: false,
+      tracking_id: '',
       directionsResult: ''
     }
     this.mapView = null;
@@ -84,6 +84,7 @@ export default class Mapping extends React.Component {
               longitude: res.provider_long,
               customer_lat: res.customer_lat,
               customer_long: res.customer_long,
+              tracking_id: res.id
             })
           }
         })
@@ -109,11 +110,88 @@ export default class Mapping extends React.Component {
         { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
   );
   }
+  saveLatLong = (latitude, longitude) => {
+    AsyncStorage.getItem('jwt').then(token => {
+      fetch(Config.API_URL + '/ProvApi/save_loc', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            latitude,
+            longitude,
+            tracking_id: this.state.tracking_id
+          })
+        })
+        .then(res => res.json())
+        .then(res => {
+          if (res == 'done') {
+            ToastAndroid.showWithGravity(
+              'Location updated',
+              ToastAndroid.SHORT,
+              ToastAndroid.BOTTOM
+            )
+          }
+          else {
+            ToastAndroid.showWithGravity(
+              'Could not update location',
+              ToastAndroid.SHORT,
+              ToastAndroid.BOTTOM
+            )
+          }
+        })
+        .catch(err => {
+          this.setState({
+            showDialog: true,
+            dialogMessage: err.message,
+            showLoader: false
+          })
+        })
+    })
+  }
+  watchPosition = () => {
+    this.watchID = navigator.geolocation.watchPosition(
+      position => {
+        const {
+          latitude,
+          longitude
+        } = position.coords;
+        const newCoordinate = {
+          latitude,
+          longitude
+        };
+
+        if (this.marker) {
+          this.marker._component.animateMarkerToCoordinate(
+            newCoordinate,
+            500
+          );
+        }
+
+        this.setState({
+          latitude,
+          longitude,
+        });
+        this.saveLatLong(latitude, longitude);
+      },
+      error => this.setState({
+        error: error.message
+      }), {
+        enableHighAccuracy: true,
+        timeout: 20000,
+        maximumAge: 1000
+      }
+    );
+  }
   componentDidMount () {
     this._getProvLocation()
     //this._checkStatus();
     //this._getCurrentLocation()
   }
+  componentWillUnmount() {
+    navigator.geolocation.clearWatch(this.watchID);
+}
   showLocation(e) {
     this.mapView.fitToElements(true)
     }
@@ -168,7 +246,7 @@ export default class Mapping extends React.Component {
       }}>
 
               <Marker.Animated
-
+              ref={marker => {this.marker = marker}}
                coordinate={new AnimatedRegion({
                 latitude: parseFloat(this.state.latitude),
                 longitude: parseFloat(this.state.longitude)
@@ -178,7 +256,6 @@ export default class Mapping extends React.Component {
                         </MapView.Callout>
               </Marker.Animated>
               <Marker.Animated
-
                coordinate={new AnimatedRegion({
                 latitude: parseFloat(this.state.customer_lat),
                 longitude: parseFloat(this.state.customer_long),

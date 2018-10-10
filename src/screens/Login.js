@@ -160,13 +160,11 @@ async componentWillMount() {
                 autoCapitalize='none'
                 placeholder="Phone Number"
                 underlineColorAndroid='transparent'
-                onSubmitEditing={() => this.password.focus()}
                 autoCorrect={false} />
 
                     <PasswordInputText
                     placeholder="Password"
                     returnKeyType='go'
-                    ref={(input) => this.password = input}
                     style={styles.loginFormTextInput}
                     underlineColorAndroid='transparent'
                     onChangeText={password => this.setState({ password })}

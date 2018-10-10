@@ -9,7 +9,7 @@ import Config from 'react-native-config'
 import { NavigationActions } from 'react-navigation'
 import { ProgressDialog, Dialog } from 'react-native-simple-dialogs'
 
-export default class Login extends React.Component {
+export default class ForgotPassword extends React.Component {
   static navigationOptions = {
     header: null
   }
@@ -111,7 +111,7 @@ export default class Login extends React.Component {
                 <Button
                   buttonStyle={styles.loginButton}
                   onPress={this._handleForgot}
-                  title="Recover"
+                  title="Recover Password"
                 />
 
           <View style={styles.separatorContainer} animation={'slideInLeft'} delay={700} duration={400}>

@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, StatusBar, AsyncStorage, ImageBackground, TouchableWithoutFeedback, Keyboard, TextInput } from 'react-native'
+import { StyleSheet, StatusBar, AsyncStorage, ImageBackground, TouchableWithoutFeedback, Keyboard, TextInput, ScrollView, Picker } from 'react-native'
 import {
   Content
 } from 'native-base'
@@ -8,6 +8,7 @@ import { Button } from 'react-native-elements';
 import { Text, View, Image } from 'react-native-animatable';
 import { ProgressDialog, Dialog } from 'react-native-simple-dialogs';
 import PasswordInputText from '../components/PasswordInput';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
 export default class Signup extends React.Component {
   static navigationOptions = {
@@ -21,6 +22,16 @@ export default class Signup extends React.Component {
       email: '',
       phone: '',
       full_name: '',
+      address: '',
+      latitude: '01',
+      longitude: '02',
+      account_name: '',
+      account_number: '',
+      profession: '',
+      services: [],
+      selectedService: 1,
+      intro: '',
+      bank_name: '',
       loadTitle: '',
       showLoading: false,
       showDialog: false,
@@ -30,6 +41,47 @@ export default class Signup extends React.Component {
     this._handleSignup = this._handleSignup.bind(this);
     this._handleLogin = this._handleLogin.bind(this);
     this._checkLength = this._checkLength.bind(this);
+    this._getServices = this._getServices.bind(this);
+  }
+
+  _getServices() {
+    AsyncStorage.getItem('jwt').then(token => {
+      fetch(Config.API_URL+'/ProvApi/get_services', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        }
+      })
+        .then(res => res.json())
+        .then(res => {
+          this.setState({
+            showLoader: false,
+            services: res,
+            disableButton: false
+          })
+        })
+        .catch(err => {
+          this.setState({
+            disableButton: true,
+            showDialog: true,
+            dialogMessage: "Could not load services. Please check your internet connection.",
+            showLoader: false
+          })
+        })
+    })
+  }
+  _updatePicker = value => {
+    this.setState({
+      selectedService: value
+    })
+  }
+  _handleLocation(data, details) {
+    this.setState({
+      address: data.description,
+      latitude: details.geometry['location'].lat,
+      longitude: details.geometry['location'].lng
+    })
   }
 
   _checkLength(val, len) {
@@ -41,8 +93,8 @@ export default class Signup extends React.Component {
     }
   }
   _handleSignup(){
-      const { full_name, email, phone, password, confirm } = this.state;
-    if (full_name != '' && email != '' && phone != '' && password != '' && confirm != '') {
+      const { full_name, email, phone, password, confirm, address, latitude, longitude, bank_name, account_name, account_number, profession, selectedService, intro } = this.state;
+    if (full_name != '' && email != '' && phone != '' && password != '' && confirm != '' && address != '' && latitude != '' && longitude != '' && bank_name != '' && account_name !=  '' && account_number != '' && profession != '' && intro != '') {
       if (password === confirm) {
         if (this._checkLength(full_name, 5)) {
           if (this._checkLength(phone, 10)) {
@@ -50,10 +102,19 @@ export default class Signup extends React.Component {
             fetch(Config.API_URL+'/ProvApi/signup', {
               method: 'POST',
               body: JSON.stringify({
-                full_name: this.state.full_name,
-                password: this.state.password,
-                email: this.state.email,
-                phone: this.state.phone,
+                full_name: full_name,
+                password: password,
+                email: email,
+                phone: phone,
+                address: address,
+                latitude: latitude,
+                longitude: longitude,
+                bank_name: bank_name,
+                account_name: account_name,
+                account_number: account_number,
+                profession: profession,
+                intro: intro,
+                selectedService: selectedService,
                 type: 'Provider'
               })
             })
@@ -148,12 +209,15 @@ export default class Signup extends React.Component {
           })
         })
   }
+  componentDidMount() {
+    this._getServices();
+  }
 
   render () {
     const { navigate } = this.props.navigation
     return (
       <ImageBackground blurRadius={1} style={styles.bg} source={require('../assets/images/b1.jpg')}>
-      <Content style={styles.containerView}>
+      <ScrollView style={styles.containerView}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View animation={'slideInDown'} delay={600} duration={400} style={styles.loginScreenContainer}>
           <StatusBar
@@ -169,8 +233,6 @@ export default class Signup extends React.Component {
                   source={require('../assets/images/logo_former.png')}
                 />
                 <TextInput
-
-                ref="full_name"
                 returnKeyType='next'
                 style={styles.loginFormTextInput}
                 onChangeText={full_name => this.setState({ full_name })}
@@ -201,17 +263,141 @@ export default class Signup extends React.Component {
                 keyboardType='numeric'
                 placeholder="Phone"
                 underlineColorAndroid='transparent'
-                onSubmitEditing={() => this.password.focus()}
+                onSubmitEditing={() => this.bank_name.focus()}
+                />
+
+                <GooglePlacesAutocomplete
+      placeholder='Select location'
+      minLength={1}
+      listViewDisplayed={ false }
+      enablePoweredByContainer={false}
+      autoFocus={false}
+      returnKeyType={'search'}
+      fetchDetails={true}
+      renderDescription={row => row.description} // custom description render
+      onPress={(data, details = null) => {
+        this._handleLocation(data, details)
+      }}
+      query={{
+        key: Config.GOOGLE_MAPS_API_KEY,
+        language: 'en',
+        types:['address', 'establishment'],
+      }}
+
+      styles={{
+        textInputContainer: {
+          height: 43,
+          borderRadius: 5,
+          borderWidth: 1,
+          borderColor: '#eaeaea',
+          backgroundColor: '#fafafa',
+          paddingLeft: 10,
+          marginLeft: 15,
+          marginRight: 15,
+          marginTop: 20,
+          marginBottom: 5,
+        },
+        description: {
+          // fontWeight: 'bold',
+          fontSize: 15,
+          height: 43,
+          fontWeight: '200',
+          fontFamily: 'NunitoSans-Regular',
+          borderColor: '#eaeaea',
+          backgroundColor: '#fafafa',
+        },
+        predefinedPlacesDescription: {
+          color: '#1faadb'
+        }
+      }}
+      nearbyPlacesAPI='GooglePlacesSearch' // Which API to use: GoogleReverseGeocoding or GooglePlacesSearch
+      GooglePlacesSearchQuery={{
+        rankby: 'distance',
+        types: 'street_address'
+      }}
+      filterReverseGeocodingByTypes={['locality', 'administrative_area_level_3']}
+      debounce={200}
+    />
+
+                 <TextInput
+                ref={(input) => this.bank_name = input}
+                returnKeyType='next'
+                style={styles.loginFormTextInput}
+                onChangeText={bank_name => this.setState({ bank_name })}
+                keyboardType='default'
+                placeholder="Bank Name"
+                underlineColorAndroid='transparent'
+                onSubmitEditing={() => this.profession.focus()}
+                />
+
+                 <Picker
+                itemStyle={{ fontFamily: 'NunitoSans-Regular'}}
+                selectedValue={this.state.selectedService}
+                style={{
+                  paddingLeft: 10,
+                  marginLeft: 15,
+                  marginRight: 15,
+                  marginTop: 0,
+                  marginBottom: 0,
+                  borderRadius: 5,
+                  borderWidth: 1,
+                  height: 43,
+                  borderColor: '#eaeaea',
+                  backgroundColor: '#fafafa',
+                }}
+                onValueChange={this._updatePicker}
+              >
+                {!this.state.showLoader
+                  ? this.state.services.map((service, index) => {
+                    return (
+                      <Picker.Item
+                        key={index}
+                        label={service['Service']['name']}
+                        value={service['Service']['id']}
+                        />
+                    )
+                  })
+                  : null}
+              </Picker>
+
+                  <TextInput
+                  ref={(input) => this.profession = input}
+                returnKeyType='next'
+                style={styles.loginFormTextInput}
+                onChangeText={profession => this.setState({ profession })}
+                keyboardType='default'
+                placeholder="Profession"
+                underlineColorAndroid='transparent'
+                onSubmitEditing={() => this.account_name.focus()}
+                />
+
+                 <TextInput
+                ref={(input) => this.account_name = input}
+                returnKeyType='next'
+                style={styles.loginFormTextInput}
+                onChangeText={account_name => this.setState({ account_name })}
+                keyboardType='default'
+                placeholder="Account Name"
+                underlineColorAndroid='transparent'
+                onSubmitEditing={() => this.account_number.focus()}
+                />
+
+                  <TextInput
+                ref={(input) => this.account_number = input}
+                returnKeyType='next'
+                style={styles.loginFormTextInput}
+                onChangeText={account_number => this.setState({ account_number })}
+                keyboardType='numeric'
+                placeholder="Account Number"
+                underlineColorAndroid='transparent'
                 />
 
                     <PasswordInputText
                     placeholder="Password"
                     iconStyle={styles.iconStyle}
                     returnKeyType='next'
-                    ref={(input) => this.password = input}
                     style={styles.loginFormTextInput}
                     underlineColorAndroid='transparent'
-                    onSubmitEditing={() => this.confirm.focus()}
                     onChangeText={password => this.setState({ password })}
                 />
 
@@ -219,10 +405,21 @@ export default class Signup extends React.Component {
                     iconStyle={styles.iconStyle}
                     placeholder="Confirm Password"
                     returnKeyType='go'
-                    ref={(input) => this.confirm= input}
                     style={styles.loginFormTextInput}
                     underlineColorAndroid='transparent'
                     onChangeText={confirm => this.setState({ confirm })}
+                />
+
+
+                  <TextInput
+                returnKeyType='next'
+                style={styles.loginFormTextInputIntro}
+                onChangeText={intro => this.setState({ intro })}
+                keyboardType='default'
+                placeholder="A short bio"
+                rowSpan={5}
+                multiline={true}
+                underlineColorAndroid='transparent'
                 />
 
                 <Button
@@ -270,7 +467,7 @@ export default class Signup extends React.Component {
           </Dialog>
         </View>
         </TouchableWithoutFeedback>
-      </Content>
+      </ScrollView>
       </ImageBackground>
     )
   }
@@ -285,7 +482,7 @@ const styles = StyleSheet.create({
   separatorContainer: {
     alignItems: 'center',
     flexDirection: 'row',
-    marginVertical: 20
+    marginVertical: 10
   },
   separatorLine: {
     flex: 1,
@@ -311,8 +508,6 @@ const styles = StyleSheet.create({
     height: null,
   },
   logo: {
-    // width: 80,
-    // height: 80,
     alignItems: 'center',
     alignSelf: 'center'
   },
@@ -348,12 +543,28 @@ const styles = StyleSheet.create({
     marginRight: 15,
     marginTop: 20,
     marginBottom: 5,
-
+  },
+  loginFormTextInputIntro: {
+    height: 80,
+    borderRadius: 5,
+    borderWidth: 1,
+    fontSize: 14,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: '#eaeaea',
+    backgroundColor: '#fafafa',
+    fontFamily: 'NunitoSans-Regular',
+    paddingLeft: 10,
+    marginLeft: 15,
+    marginRight: 15,
+    marginTop: 20,
+    marginBottom: 5,
   },
   loginButton: {
     backgroundColor: '#3897f1',
     borderRadius: 5,
     height: 45,
     marginTop: 10,
+    marginBottom: 30
   },
 })
