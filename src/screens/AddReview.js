@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, Image, Alert, StatusBar, AsyncStorage } from 'react-native'
+import { StyleSheet, Image, StatusBar } from 'react-native'
 import {
   Container,
   Header,
@@ -30,7 +30,7 @@ export default class AddReview extends React.Component {
   }
 
   navigateToLogin = () => {
-   
+
     const toHome = NavigationActions.reset({
       index: 0,
       actions: [NavigationActions.navigate({ routeName: 'drawerStack' })]

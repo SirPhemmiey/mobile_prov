@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Animated, Text, View, Dimensions, StyleSheet } from 'react-native';
 
 import { Constants } from 'expo';
- 
+
 const PAGE_WIDTH = Dimensions.get('window').width;
 const PAGES = [
   {
@@ -48,7 +48,6 @@ export default class App extends Component {
       inputRange: PAGES.map((_, i) => i),
       outputRange: PAGES.map(p => p.backgroundColor),
     });
-    console.log(PAGE_WIDTH)
 
     return (
       <View style={styles.container}>

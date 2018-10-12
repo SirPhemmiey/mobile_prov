@@ -63,7 +63,6 @@ export default class Services extends React.Component {
               this.setState({
                 new_services: res
               })
-              console.warn(res);
             }
             else {
               this.setState({ new_services: [] });
@@ -111,8 +110,8 @@ export default class Services extends React.Component {
         })
     })
   }
-  //this will render specific list of services 
-  
+  //this will render specific list of services
+
   _refresh() {
     this.loadData()
   }
@@ -162,7 +161,7 @@ export default class Services extends React.Component {
           colors='#6c5ce7'
           progressBackgroundColor='#6c5ce7'
         >
-          
+
 
           <Text style={styles.title}>Find service providers near to you</Text>
           {!this.state.showLoader
@@ -198,7 +197,7 @@ export default class Services extends React.Component {
                   </TouchableOpacity>
                 )
               })
-            ) 
+            )
             : null}
           <ActivityIndicator
             color='#6c5ce7'

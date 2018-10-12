@@ -210,16 +210,13 @@ export default class Settings extends React.Component {
       <Container>
 
         <Header style={{ backgroundColor: '#3897f1' }}>
-          <Left>
-            <Button transparent iconLeft>
-              <Icon ios='ios-arrow-back'
-                android='md-arrow-back' onPress={() => goBack()} />
-            </Button>
-          </Left>
-          <Body>
-            <Title style={styles.heading}>Settings</Title>
-          </Body>
-          <Right />
+        <Left style={{flex:1}} />
+       <Body style={{flex:1}}>
+       <Title style={styles.heading}>Settings</Title>
+         </Body>
+         <Right style={{flex:1}}>
+                    <Icon name='menu' style={{color:'white'}} />
+                </Right>
         </Header>
         <StatusBar
           barStyle='light-content'

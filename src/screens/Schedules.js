@@ -9,8 +9,6 @@ import {
   Image,
   TouchableOpacity,
   Modal,
-  TouchableHighlight,
-  TextInput
 } from 'react-native'
 import Config from 'react-native-config';
 import { Card } from 'react-native-elements';
@@ -28,10 +26,7 @@ import {
   Right,
   Icon,
   Body,
-  Item,
-  Input,
-  InputGroup,
-  Title,Form, Textarea
+  Title
 } from 'native-base'
 import StarRating from 'react-native-star-rating';
 import PTRView from 'react-native-pull-to-refresh';
@@ -242,19 +237,13 @@ _handleComplete = (schedule_id, provider_id) => () => {
       <Container key={this.state.value}>
 
         <Header style={{ backgroundColor: '#3897f1' }}>
-         <Left>
-         <Button transparent>
-              <Icon
-                onPress={() => goBack()}
-                ios='ios-arrow-back'
-                android='md-arrow-back'
-              />
-            </Button>
-         </Left>
-         <Body>
+        <Left style={{flex:1}} />
+       <Body style={{flex:1}}>
              <Title style={{fontFamily: 'NunitoSans-Regular'}}>Schedules</Title>
          </Body>
-         <Right />
+         <Right style={{flex:1}}>
+                    <Icon name='menu' style={{color:'white'}} />
+                </Right>
         </Header>
          <StatusBar
           barStyle='light-content'
